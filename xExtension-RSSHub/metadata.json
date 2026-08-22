@@ -1,0 +1,8 @@
+{
+  "name": "RSSHub Radar",
+  "author": "luckycold",
+  "description": "Convert supported website URLs into feeds through a configured RSSHub instance using RSSHub Radar rules.",
+  "version": "1.0.0",
+  "entrypoint": "RssHub",
+  "type": "system"
+}

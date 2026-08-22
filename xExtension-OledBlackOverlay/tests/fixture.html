@@ -1,0 +1,360 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script>
+      if (new URLSearchParams(location.search).has("rtl")) {
+        document.documentElement.dir = "rtl";
+      }
+    </script>
+    <link
+      rel="stylesheet"
+      href="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/base-theme/frss.css"
+    />
+    <link
+      rel="stylesheet"
+      href="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/Mapco/mapco.css"
+    />
+    <link
+      rel="stylesheet"
+      href="file:///config/.hermes/cache/freshrss-live-extensions-20260821/xExtension-Youlag/static/theme.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="file:///config/.hermes/cache/freshrss-live-extensions-20260821/xExtension-CompactMediaCards/static/compact-media-cards.css"
+    />
+    <link rel="stylesheet" href="../static/oled-black.css" />
+    <style>
+      body {
+        margin: 0;
+      }
+      .header {
+        min-height: 40px;
+      }
+      #global {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        min-height: 600px;
+      }
+      .aside_feed {
+        min-height: 600px;
+      }
+      #stream {
+        min-height: 600px;
+      }
+      .fixture-panel {
+        min-height: 80px;
+      }
+      #subscription-title::after {
+        content: attr(data-unread);
+        display: inline-block;
+        margin-left: 8px;
+        padding: 1px 7px;
+      }
+      @media (max-width: 840px) {
+        #global {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="youlag-active youlag-loaded youlag-sidenav--expanded yl-page-home"
+  >
+    <header class="header">
+      <div class="item title"><a href="#">FreshRSS</a></div>
+      <div class="item search">
+        <form>
+          <div id="header-search" class="stick">
+            <input id="header-search-input" type="search" value="Search" />
+            <button id="header-search-button" class="btn" type="submit">
+              <img
+                id="header-search-icon"
+                class="icon"
+                src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/search.svg"
+              />
+            </button>
+          </div>
+        </form>
+      </div>
+      <nav class="item configure">
+        <div class="dropdown">
+          <div id="dropdown-configure" class="dropdown-target"></div>
+          <a
+            id="global-settings"
+            class="btn dropdown-toggle"
+            href="#dropdown-configure"
+            ><img
+              id="global-settings-icon"
+              class="icon"
+              src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/configure.svg"
+          /></a>
+        </div>
+      </nav>
+    </header>
+    <div id="global">
+      <nav id="aside_feed" class="aside aside_feed">
+        <ul id="sidebar" class="tree">
+          <li class="tree-folder category all">
+            <a class="tree-folder-title" href="#"
+              ><span id="subscription-title" class="title" data-unread="2310"
+                >Subscriptions</span
+              ></a
+            >
+          </li>
+          <li class="tree-folder category">
+            <a class="tree-folder-title" href="#"
+              ><span class="title" data-unread="527">Entertainment</span></a
+            >
+          </li>
+        </ul>
+      </nav>
+      <main id="stream">
+        <div id="yl_category_toolbar" class="yl-toolbar-open--viewOptions">
+          <div id="yl_category_title_container">
+            <div id="yl_category_title">Subscriptions</div>
+            <button id="yl_nav_menu_container_toggle">Configure view</button>
+          </div>
+          <div id="yl_nav_menu_container">
+            <nav id="yl_nav_menu_container_content" class="nav_menu">
+              <div id="nav_menu_actions" class="group">
+                <a id="filter-default" class="btn" href="#"
+                  ><img
+                    id="read-icon"
+                    class="icon"
+                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/read.svg"
+                /></a>
+                <a id="filter-active" class="btn active" href="#"
+                  ><img
+                    class="icon"
+                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/unread.svg"
+                /></a>
+                <a class="btn" href="#"
+                  ><img
+                    class="icon"
+                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/starred.svg"
+                /></a>
+                <a class="btn" href="#"
+                  ><img
+                    class="icon"
+                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/non-starred.svg"
+                /></a>
+                <div id="nav_menu_queries" class="dropdown">
+                  <a
+                    id="toggle-userqueries"
+                    class="dropdown-toggle btn"
+                    href="#"
+                    ><img
+                      id="userqueries-icon"
+                      class="icon"
+                      src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/bookmark-tag.svg"
+                  /></a>
+                </div>
+              </div>
+              <div id="nav_menu_read_all" class="group stick">
+                <form id="mark-read-menu">
+                  <button id="mark-read" class="read_all btn" type="button">
+                    Mark as read
+                  </button>
+                  <div id="nav_menu_read" class="dropdown">
+                    <span id="dropdown-read" class="dropdown-target"></span>
+                    <a id="mark-read-more" class="dropdown-toggle btn" href="#"
+                      ><img
+                        id="mark-read-icon"
+                        class="icon"
+                        src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/down.svg"
+                    /></a>
+                  </div>
+                </form>
+              </div>
+              <div id="nav_menu_views" class="group">
+                <a class="btn active" href="#"
+                  ><img
+                    class="icon"
+                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/view-normal.svg"
+                /></a>
+                <a class="btn" href="#"
+                  ><img
+                    class="icon"
+                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/view-global.svg"
+                /></a>
+                <a class="btn" href="#"
+                  ><img
+                    class="icon"
+                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/view-reader.svg"
+                /></a>
+              </div>
+              <div id="nav_menu_sort" class="group">
+                <div class="dropdown">
+                  <a id="toggle-order" class="dropdown-toggle btn" href="#"
+                    ><img
+                      id="sort-icon"
+                      class="icon"
+                      src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/sort-down.svg"
+                  /></a>
+                </div>
+              </div>
+              <div id="nav_menu_actualize" class="group">
+                <a id="actualize" class="btn" href="#"
+                  ><img
+                    id="refresh-icon"
+                    class="icon"
+                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/refresh.svg"
+                /></a>
+              </div>
+              <div id="yl_nav_menu_settings_shortcut">
+                <a id="more-settings" class="btn" href="#">More settings</a>
+              </div>
+            </nav>
+          </div>
+        </div>
+        <div id="dropdown-search-wrapper" class="dropdown only-mobile">
+          <div id="dropdown-search" class="dropdown-target"></div>
+          <a
+            id="toggle-search"
+            class="dropdown-toggle btn"
+            title="Search"
+            href="#dropdown-search"
+            ><img
+              id="mobile-search-icon"
+              class="icon"
+              src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/search.svg"
+          /></a>
+          <ul class="dropdown-menu">
+            <li class="item"><input type="search" value="Search" /></li>
+          </ul>
+        </div>
+        <div id="card" class="flux cmc-swipe-ready cmc-no-thumbnail not_read">
+          <ul id="card-header" class="flux_header">
+            <li id="thumbnail" class="item thumbnail"></li>
+            <li class="item titleAuthorSummaryDate">
+              <a class="title">OLED card</a><span class="date">Now</span>
+            </li>
+            <li id="text-card" class="cmc-text-content">
+              <a class="title">Text card</a><span class="summary">Summary</span>
+            </li>
+          </ul>
+        </div>
+        <section id="panel" class="fixture-panel"></section>
+        <section id="settings-box" class="box">
+          <div class="box-title">Settings</div>
+          <div class="box-content">
+            <input id="settings-input" value="Value" />
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+      addEventListener("load", () => {
+        const color = (id, pseudo = null) =>
+          getComputedStyle(document.querySelector(id), pseudo).backgroundColor;
+        const image = (id, pseudo = null) =>
+          getComputedStyle(document.querySelector(id), pseudo).backgroundImage;
+        const rect = (id) => {
+          const box = document.querySelector(id).getBoundingClientRect();
+          return {
+            top: box.top,
+            right: box.right,
+            bottom: box.bottom,
+            left: box.left,
+            width: box.width,
+            height: box.height,
+          };
+        };
+        const control = (id, pseudo = null) => {
+          const style = getComputedStyle(document.querySelector(id), pseudo);
+          return {
+            backgroundColor: style.backgroundColor,
+            backgroundImage: style.backgroundImage,
+            borderColor: style.borderColor,
+            borderRadius: style.borderRadius,
+            borderTopWidth: style.borderTopWidth,
+            borderRightWidth: style.borderRightWidth,
+            borderBottomWidth: style.borderBottomWidth,
+            borderLeftWidth: style.borderLeftWidth,
+            color: style.color,
+            boxShadow: style.boxShadow,
+            gap: style.gap,
+            paddingTop: style.paddingTop,
+            paddingRight: style.paddingRight,
+            paddingBottom: style.paddingBottom,
+            paddingLeft: style.paddingLeft,
+            lineHeight: style.lineHeight,
+            content: style.content,
+          };
+        };
+        const icon = (id) => {
+          const element = document.querySelector(id);
+          const style = getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          return {
+            display: style.display,
+            visibility: style.visibility,
+            opacity: style.opacity,
+            filter: style.filter,
+            width: rect.width,
+            height: rect.height,
+            naturalWidth: element.naturalWidth,
+            naturalHeight: element.naturalHeight,
+            objectPosition: style.objectPosition,
+            clipPath: style.clipPath,
+          };
+        };
+        const values = {
+          html: getComputedStyle(document.documentElement).backgroundColor,
+          body: color("body"),
+          header: color(".header"),
+          aside: color(".aside_feed"),
+          stream: color("#stream"),
+          toolbar: color("#yl_category_toolbar"),
+          card: color("#card"),
+          cardHeader: color("#card-header"),
+          thumbnail: color("#thumbnail"),
+          textCard: color("#text-card"),
+          panel: color("#panel"),
+          settingsBox: color("#settings-box"),
+          settingsInput: color("#settings-input"),
+          configureView: control("#yl_nav_menu_container_toggle"),
+          globalSettings: control("#global-settings"),
+          globalSettingsRect: rect("#global-settings"),
+          globalSettingsIcon: icon("#global-settings-icon"),
+          headerSearch: control("#header-search"),
+          headerSearchRect: rect("#header-search"),
+          headerSearchInput: control("#header-search-input"),
+          headerSearchInputRect: rect("#header-search-input"),
+          headerSearchButton: control("#header-search-button"),
+          headerSearchButtonRect: rect("#header-search-button"),
+          headerSearchIcon: icon("#header-search-icon"),
+          mobileSearch: control("#toggle-search"),
+          mobileSearchRect: rect("#toggle-search"),
+          mobileSearchIcon: icon("#mobile-search-icon"),
+          defaultFilter: control("#filter-default"),
+          defaultFilterRect: rect("#filter-default"),
+          activeFilter: control("#filter-active"),
+          markRead: control("#mark-read"),
+          markReadRect: rect("#mark-read"),
+          markReadMore: control("#mark-read-more"),
+          markReadMoreBefore: control("#mark-read-more", "::before"),
+          markReadMoreRect: rect("#mark-read-more"),
+          userQueries: control("#toggle-userqueries"),
+          sortOrder: control("#toggle-order"),
+          userQueriesIcon: icon("#userqueries-icon"),
+          markReadIcon: icon("#mark-read-icon"),
+          sortIcon: icon("#sort-icon"),
+          readIcon: icon("#read-icon"),
+          refreshIcon: icon("#refresh-icon"),
+          moreSettings: control("#more-settings"),
+          actionGroup: control("#nav_menu_actions"),
+          markReadGroup: control("#mark-read-menu"),
+          markReadGroupRect: rect("#mark-read-menu"),
+          subscriptionCount: control("#subscription-title", "::after"),
+          swipeAccent: image("#card", "::before"),
+        };
+        const pre = document.createElement("pre");
+        pre.id = "computed-results";
+        pre.textContent = JSON.stringify(values);
+        document.body.append(pre);
+      });
+    </script>
+  </body>
+</html>

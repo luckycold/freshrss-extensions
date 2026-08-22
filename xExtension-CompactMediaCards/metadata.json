@@ -1,0 +1,8 @@
+{
+  "name": "Compact Media Cards",
+  "author": "luckycold",
+  "description": "Image-first feed cards with compact metadata and FeedMe-style swipe actions.",
+  "version": "1.0.0",
+  "entrypoint": "CompactMediaCards",
+  "type": "user"
+}

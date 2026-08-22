@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Compact Media Cards height and controls fixture</title>
+    <link
+      rel="stylesheet"
+      href="/config/.hermes/cache/FreshRSS-1.29.1/p/themes/base-theme/frss.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/config/.hermes/cache/FreshRSS-1.29.1/p/themes/Mapco/mapco.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/config/.hermes/cache/freshrss-upstreams-20260821-153249/youlag/static/theme.min.css"
+    />
+    <link rel="stylesheet" href="../static/compact-media-cards.css?v=1.4.2" />
+    <link
+      rel="stylesheet"
+      href="/config/.hermes/cache/xExtension-OledBlackOverlay/static/oled-black.css"
+    />
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #000;
+        color: #fff;
+        font-family: system-ui, sans-serif;
+      }
+      body {
+        padding: 20px;
+      }
+      main#stream {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        align-items: stretch;
+        gap: 16px !important;
+        width: 640px;
+        padding: 0 !important;
+      }
+      .item {
+        list-style: none;
+      }
+      .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        background: transparent;
+        color: #fff;
+        font-size: 16px;
+        line-height: 1;
+      }
+      .tall-neighbor {
+        height: 420px !important;
+        background: #181818 !important;
+      }
+    </style>
+  </head>
+  <body class="youlag-active">
+    <script>
+      document.body.classList.toggle(
+        "cmc-desktop-controls",
+        matchMedia("(min-width: 841px)").matches,
+      );
+      if (new URLSearchParams(location.search).has("reveal")) {
+        addEventListener("DOMContentLoaded", () => {
+          document.querySelectorAll(".flux.cmc-swipe-ready").forEach((card) => {
+            card.classList.add("cmc-reveal-controls");
+          });
+        });
+      }
+    </script>
+    <main id="stream">
+      <div id="image-card" class="flux cmc-swipe-ready not_read">
+        <ul id="image-header" class="flux_header">
+          <li
+            id="media"
+            class="item thumbnail"
+            style="--cmc-media-aspect-ratio: 900 / 1200"
+          >
+            <img
+              id="card-image"
+              width="900"
+              height="1200"
+              alt=""
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='1200'%3E%3Crect width='900' height='400' fill='%23e24b4b'/%3E%3Crect y='400' width='900' height='400' fill='%233b6b8a'/%3E%3Crect y='800' width='900' height='400' fill='%2349a55d'/%3E%3C/svg%3E"
+            />
+          </li>
+          <li class="item titleAuthorSummaryDate">
+            <a id="title" class="title" href="#"
+              >A title that should sit naturally above metadata without
+              clipping</a
+            ><span id="date" class="date">Now</span>
+          </li>
+          <li id="karakeep" class="item manage">
+            <a id="karakeep-button" class="karakeepButton" href="#"
+              ><span id="karakeep-icon" class="icon">⇩</span></a
+            >
+          </li>
+          <li id="favorite" class="item manage">
+            <a id="favorite-button" class="bookmark" href="#"
+              ><span id="favorite-icon" class="icon">☆</span></a
+            >
+          </li>
+          <li id="feed" class="item website">
+            <a class="item-element" href="#"
+              ><span class="websiteName">Feed</span></a
+            >
+          </li>
+          <li id="read-control" class="item manage">
+            <a class="read" href="#"><span class="icon"></span></a>
+          </li>
+          <li id="reader-control" class="item link">
+            <a href="#"><span class="icon"></span></a>
+          </li>
+        </ul>
+      </div>
+      <div class="flux cmc-swipe-ready cmc-no-thumbnail tall-neighbor">
+        <ul class="flux_header"></ul>
+      </div>
+      <div
+        id="current-image-card"
+        class="flux cmc-swipe-ready current not_read"
+      >
+        <ul id="current-image-header" class="flux_header">
+          <li
+            id="current-media"
+            class="item thumbnail"
+            style="--cmc-media-aspect-ratio: 1600 / 900"
+          >
+            <img
+              width="1600"
+              height="900"
+              alt=""
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Crect width='1600' height='900' fill='%23456b8c'/%3E%3C/svg%3E"
+            />
+          </li>
+          <li class="item titleAuthorSummaryDate">
+            <a id="current-title" class="title" href="#"
+              >Selected landscape card should retain the same picture-card
+              overlay</a
+            ><span id="current-date" class="date">2 hours ago</span>
+          </li>
+          <li id="current-karakeep" class="item manage">
+            <a id="current-karakeep-button" class="karakeepButton" href="#"
+              ><span class="icon">⇩</span></a
+            >
+          </li>
+          <li id="current-favorite" class="item manage">
+            <a id="current-favorite-button" class="bookmark" href="#"
+              ><span class="icon">☆</span></a
+            >
+          </li>
+          <li id="current-feed" class="item website">
+            <a class="item-element" href="#"
+              ><span class="websiteName">Current feed</span></a
+            >
+          </li>
+          <li class="item manage">
+            <a class="read" href="#"><span class="icon"></span></a>
+          </li>
+          <li class="item link">
+            <a href="#"><span class="icon"></span></a>
+          </li>
+        </ul>
+      </div>
+    </main>
+    <script>
+      (() => {
+        const rect = (selector) => {
+          const box = document.querySelector(selector).getBoundingClientRect();
+          return {
+            top: box.top,
+            bottom: box.bottom,
+            height: box.height,
+            width: box.width,
+            left: box.left,
+            right: box.right,
+          };
+        };
+        const style = (selector) => {
+          const computed = getComputedStyle(document.querySelector(selector));
+          return {
+            backgroundColor: computed.backgroundColor,
+            borderColor: computed.borderColor,
+            borderWidth: computed.borderWidth,
+            borderRadius: computed.borderRadius,
+            boxShadow: computed.boxShadow,
+            backdropFilter: computed.backdropFilter,
+            display: computed.display,
+            visibility: computed.visibility,
+            pointerEvents: computed.pointerEvents,
+            opacity: computed.opacity,
+            position: computed.position,
+            zIndex: computed.zIndex,
+          };
+        };
+        const measure = () => ({
+          imageCard: rect("#image-card"),
+          imageHeader: rect("#image-header"),
+          media: rect("#media"),
+          image: rect("#card-image"),
+          imageObjectFit: getComputedStyle(
+            document.querySelector("#card-image"),
+          ).objectFit,
+          desktopControls: document.body.classList.contains(
+            "cmc-desktop-controls",
+          ),
+          title: rect("#title"),
+          titleComputed: (() => {
+            const c = getComputedStyle(document.querySelector("#title"));
+            return {
+              position: c.position,
+              display: c.display,
+              width: c.width,
+              height: c.height,
+              minHeight: c.minHeight,
+              maxHeight: c.maxHeight,
+              padding: c.padding,
+              top: c.top,
+              right: c.right,
+              bottom: c.bottom,
+              left: c.left,
+              aspectRatio: c.aspectRatio,
+              boxSizing: c.boxSizing,
+              lineClamp: c.webkitLineClamp,
+            };
+          })(),
+          favorite: rect("#favorite"),
+          favoriteStyle: style("#favorite"),
+          favoriteButton: rect("#favorite-button"),
+          favoriteButtonStyle: style("#favorite-button"),
+          favoriteIcon: rect("#favorite-icon"),
+          karakeep: rect("#karakeep"),
+          karakeepStyle: style("#karakeep"),
+          karakeepButton: rect("#karakeep-button"),
+          karakeepButtonStyle: style("#karakeep-button"),
+          karakeepIcon: rect("#karakeep-icon"),
+          feed: rect("#feed"),
+          date: rect("#date"),
+          readControl: style("#read-control"),
+          readControlRect: rect("#read-control"),
+          readerControl: style("#reader-control"),
+          readerControlRect: rect("#reader-control"),
+          readButton: style("#read-control > a.read"),
+          readerButton: style("#reader-control > a"),
+          currentCard: rect("#current-image-card"),
+          currentHeader: rect("#current-image-header"),
+          currentMedia: rect("#current-media"),
+          currentTitle: rect("#current-title"),
+          currentFavorite: rect("#current-favorite"),
+          currentFavoriteButton: rect("#current-favorite-button"),
+          currentKarakeep: rect("#current-karakeep"),
+          currentKarakeepButton: rect("#current-karakeep-button"),
+          currentFeed: rect("#current-feed"),
+          currentDate: rect("#current-date"),
+          favoriteHit: (() => {
+            const box = document.querySelector("#favorite-button").getBoundingClientRect();
+            const hit = document.elementFromPoint(
+              box.left + box.width / 2,
+              box.top + box.height / 2,
+            );
+            return hit
+              ? {
+                  id: hit.id,
+                  className: hit.className,
+                  isFavorite:
+                    Boolean(hit.closest("#favorite-button")) ||
+                    Boolean(hit.closest("a.bookmark")),
+                  isTitle: Boolean(hit.closest("a.title")),
+                }
+              : null;
+          })(),
+        });
+        const idle = measure();
+        if (!new URLSearchParams(location.search).has("idle")) {
+          document.querySelector("#image-card").classList.add("cmc-reveal-controls");
+          document.querySelector("#current-image-card").classList.add("cmc-reveal-controls");
+        }
+        const revealed = measure();
+        const output = document.createElement("pre");
+        output.id = "height-controls-results";
+        output.textContent = JSON.stringify({
+          ...idle,
+          revealed,
+          revealClass: document.querySelector("#image-card").className,
+        });
+        document.body.append(output);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "Podcast Artwork",
+  "author": "luckycold",
+  "description": "Preserves per-episode iTunes artwork as FreshRSS thumbnails, including RSSHub Spotify feeds.",
+  "version": "1.0.0",
+  "entrypoint": "PodcastArtwork",
+  "type": "user"
+}

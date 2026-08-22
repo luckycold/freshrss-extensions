@@ -1,0 +1,821 @@
+:root {
+	--cmc-card-background: #111214;
+	--cmc-card-radius: 14px;
+	--cmc-meta-height: 48px;
+	--cmc-text: #f6f7f9;
+	--cmc-muted: #a9adb6;
+	--cmc-card-control-surface: rgb(0 0 0 / 32%);
+	--cmc-card-control-surface-hover: rgb(0 0 0 / 48%);
+	--cmc-card-control-border: rgb(255 255 255 / 12%);
+}
+
+/* Match YouLag's category toolbar to the compact card language. */
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar {
+	box-sizing: border-box;
+	margin: 0 !important;
+	padding: 6px 8px !important;
+	border: 1px solid rgb(255 255 255 / 6%);
+	border-radius: var(--cmc-card-radius);
+	background: var(--cmc-card-background) !important;
+	box-shadow: 0 1px 0 rgb(255 255 255 / 5%), 0 7px 18px rgb(0 0 0 / 16%);
+}
+
+/* Compact mixed-height cards without changing FreshRSS's DOM/source order. */
+body.youlag-active:not(.reader) main#stream.cmc-masonry-active {
+	grid-auto-flow: row dense;
+	grid-auto-rows: 1px;
+	align-items: start;
+}
+
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar > #yl_category_title_container {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	min-height: 40px;
+	gap: 8px;
+}
+
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_category_title {
+	min-width: 0;
+	padding: 0 6px !important;
+	font-size: 1.05rem;
+	font-weight: 700;
+	line-height: 1.2;
+	word-break: normal;
+}
+
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_container_toggle,
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_manage_current_feed,
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_stream_category_filter_toggle {
+	flex: 0 0 auto;
+	min-height: 38px;
+	margin: 0;
+	padding: 7px 12px;
+	border: 1px solid rgb(255 255 255 / 9%);
+	border-radius: 999px;
+	background: rgb(255 255 255 / 4%);
+	color: var(--cmc-text);
+	font-size: 0.9rem;
+	line-height: 1.15;
+}
+
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_container_toggle:hover,
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_container_toggle:focus-visible,
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_manage_current_feed:hover,
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_manage_current_feed:focus-visible {
+	border-color: rgb(255 255 255 / 16%);
+	background: rgb(255 255 255 / 9%);
+}
+
+@media (max-width: 480px) {
+	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar {
+		padding: 5px 6px !important;
+		border-radius: 11px;
+	}
+
+	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_category_title {
+		padding-left: 5px !important;
+		font-size: 1rem;
+	}
+
+	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_container_toggle,
+	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_manage_current_feed {
+		min-height: 36px;
+		padding: 6px 10px;
+		font-size: 0.84rem;
+	}
+}
+
+/* Keep the extension inert in FreshRSS reader mode and on an expanded entry. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) {
+	--cmc-drag-x: 0px;
+	--cmc-swipe-progress: 0;
+	--cmc-indicator-opacity: 0;
+	--cmc-indicator-offset: 34px;
+	--cmc-indicator-scale: 0.38;
+	--cmc-indicator-blur: 3.5px;
+	--cmc-indicator-tilt: 0deg;
+	--cmc-label-opacity: 0;
+	--cmc-label-offset: 8px;
+	--cmc-left-action-color: #24764c;
+	--cmc-left-action-dark: #17472f;
+	--cmc-right-action-color: #9b641a;
+	--cmc-right-action-dark: #68400f;
+	position: relative !important;
+	display: block !important;
+	align-self: start !important;
+	height: fit-content !important;
+	min-height: 0 !important;
+	margin-bottom: 0 !important;
+	border: 0 !important;
+	border-radius: var(--cmc-card-radius) !important;
+	background: var(--cmc-card-background) !important;
+	box-shadow: 0 1px 0 rgb(255 255 255 / 7%), 0 10px 24px rgb(0 0 0 / 20%);
+	overflow: hidden !important;
+	isolation: isolate;
+	touch-action: pan-y pinch-zoom;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active)::before,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active)::after {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	display: flex;
+	align-items: center;
+	opacity: 0;
+	transition: opacity 100ms linear;
+	pointer-events: none;
+}
+
+/* Dragging right reveals the favorite action on the left. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active)::before {
+	content: "";
+	justify-content: flex-start;
+	background: linear-gradient(90deg, var(--cmc-right-action-color), var(--cmc-right-action-dark));
+}
+
+/* Dragging left reveals the configured action on the right. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active)::after {
+	content: "";
+	justify-content: flex-end;
+	background: linear-gradient(270deg, var(--cmc-left-action-color), var(--cmc-left-action-dark));
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-right::before,
+body:not(.reader) main#stream div.flux.cmc-swipe-left::after {
+	opacity: var(--cmc-swipe-progress);
+}
+
+/* The action itself rises and fades in as horizontal drag progress increases. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .cmc-swipe-indicator {
+	position: absolute;
+	top: 50%;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 7px;
+	max-width: 112px;
+	color: #fff;
+	font-size: 0.78rem;
+	font-weight: 700;
+	line-height: 1.15;
+	text-align: center;
+	letter-spacing: 0.015em;
+	opacity: 0;
+	transform: translateY(calc(-50% + var(--cmc-indicator-offset)));
+	filter: blur(var(--cmc-indicator-blur));
+	transition:
+		opacity 160ms ease-out,
+		transform 210ms cubic-bezier(0.16, 0.9, 0.25, 1),
+		filter 160ms ease-out;
+	pointer-events: none;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .cmc-swipe-indicator-left {
+	right: 20px;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .cmc-swipe-indicator-right {
+	left: 20px;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-swipe-left:not(.active) > .cmc-swipe-indicator-left,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-swipe-right:not(.active) > .cmc-swipe-indicator-right {
+	opacity: var(--cmc-indicator-opacity);
+}
+
+body:not(.reader) main#stream div.flux.cmc-dragging > .cmc-swipe-indicator,
+body:not(.reader) main#stream div.flux.cmc-dragging > .cmc-swipe-indicator .cmc-swipe-icon,
+body:not(.reader) main#stream div.flux.cmc-dragging > .cmc-swipe-indicator .cmc-swipe-label {
+	transition: none;
+}
+
+.cmc-swipe-indicator .cmc-swipe-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 46px;
+	height: 46px;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	font-size: 1.45rem;
+	backdrop-filter: none !important;
+	transform: scale(var(--cmc-indicator-scale)) rotate(var(--cmc-indicator-tilt));
+	transform-origin: 50% 100%;
+	transition: transform 220ms cubic-bezier(0.16, 1.25, 0.3, 1);
+}
+
+.cmc-swipe-indicator .cmc-swipe-icon img {
+	width: 25px;
+	height: 25px;
+	filter: brightness(0) invert(1);
+	object-fit: contain;
+}
+
+.cmc-swipe-indicator .cmc-swipe-label {
+	opacity: var(--cmc-label-opacity);
+	transform: translateY(var(--cmc-label-offset));
+	transition: opacity 140ms ease-out, transform 180ms ease-out;
+}
+
+/* Show the intended favorite state immediately while FreshRSS saves it. */
+body:not(.reader) main#stream div.flux.cmc-favorite-pending > .flux_header a.bookmark {
+	position: relative !important;
+}
+
+body:not(.reader) main#stream div.flux.cmc-favorite-pending > .flux_header a.bookmark > .icon {
+	opacity: 0 !important;
+}
+
+body:not(.reader) main#stream div.flux.cmc-favorite-pending > .flux_header a.bookmark > .cmc-optimistic-star {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #ffd76a;
+	font-size: 1.45rem;
+	font-weight: 700;
+	line-height: 1;
+	text-shadow: 0 0 10px rgb(255 199 73 / 42%);
+	pointer-events: none;
+}
+
+body:not(.reader) main#stream div.flux.cmc-favorite-pending-remove > .flux_header a.bookmark > .cmc-optimistic-star {
+	color: var(--cmc-muted);
+	text-shadow: none;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header {
+	position: relative !important;
+	z-index: 2;
+	display: grid !important;
+	grid-template-columns: 44px minmax(0, 1fr) auto;
+	grid-template-rows: auto;
+	width: 100% !important;
+	height: auto !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: var(--cmc-card-radius) !important;
+	background: var(--cmc-card-background) !important;
+	overflow: hidden;
+	transform: translate3d(var(--cmc-drag-x), 0, 0);
+	transition: transform 180ms cubic-bezier(0.22, 0.75, 0.25, 1);
+	will-change: transform;
+}
+
+/* Fade metadata into the media instead of reserving an opaque footer row. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header::after {
+	content: "";
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 2;
+	height: calc(var(--cmc-meta-height) + 110px);
+	background: linear-gradient(180deg, transparent 0%, rgb(5 7 9 / 24%) 32%, rgb(5 7 9 / 84%) 100%);
+	pointer-events: none;
+}
+
+body:not(.reader) main#stream div.flux.cmc-dragging > .flux_header {
+	transition: none;
+}
+
+body:not(.reader) main#stream div.flux.cmc-settling > .flux_header {
+	transition-duration: 280ms;
+	transition-timing-function: cubic-bezier(0.3, 0.8, 0.35, 1);
+}
+
+/* The thumbnail and the title share a grid cell, creating the image overlay. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > .item.thumbnail {
+	position: relative !important;
+	grid-column: 1 / -1;
+	grid-row: 1;
+	order: initial !important;
+	width: 100% !important;
+	height: auto !important;
+	min-height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	aspect-ratio: var(--cmc-media-aspect-ratio, auto) !important;
+	border-radius: 0 !important;
+	background: linear-gradient(135deg, #34383e, #1b2027 48%, #29323d);
+	overflow: hidden;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > .item.thumbnail::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	padding: 0 !important;
+	border-radius: 0 !important;
+	background:
+		radial-gradient(circle at 22% 25%, rgb(100 140 190 / 28%), transparent 32%),
+		linear-gradient(135deg, #34383e, #1b2027 48%, #29323d) !important;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > .item.thumbnail img {
+	position: relative !important;
+	z-index: 1;
+	display: block !important;
+	width: 100% !important;
+	height: auto !important;
+	max-height: none !important;
+	aspect-ratio: auto !important;
+	margin: 0 !important;
+	border-radius: 0 !important;
+	background: #25282d;
+	object-fit: contain !important;
+	object-position: center !important;
+}
+
+/* display:contents lets the title and date occupy separate card grid cells. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > .item.titleAuthorSummaryDate {
+	display: contents !important;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > .item.titleAuthorSummaryDate > a.title {
+	position: absolute !important;
+	top: auto !important;
+	right: 16px;
+	bottom: calc(var(--cmc-meta-height) + 12px);
+	left: 16px;
+	z-index: 3;
+	box-sizing: border-box;
+	display: -webkit-box !important;
+	width: auto !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	height: auto !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	color: var(--cmc-text) !important;
+	font-size: clamp(1.05rem, 2.8vw, 1.3rem) !important;
+	font-weight: 650 !important;
+	line-height: 1.22 !important;
+	text-decoration: none !important;
+	text-shadow: 0 1px 3px rgb(0 0 0 / 72%);
+	white-space: normal !important;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	overflow: hidden;
+}
+
+body:not(.reader) main#stream div.flux.cmc-panoramic.cmc-swipe-ready:not(.active) > .flux_header > .item.titleAuthorSummaryDate > a.title {
+	top: 8px !important;
+	bottom: auto;
+	font-size: 0.9rem !important;
+	line-height: 1.1 !important;
+	-webkit-line-clamp: 1;
+	line-clamp: 1;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) .item.titleAuthorSummaryDate .author,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) .item.titleAuthorSummaryDate .summary {
+	display: none !important;
+}
+
+/* Text-first fallback for entries whose thumbnail slot is empty or failed. */
+body:not(.reader) main#stream div.flux.cmc-no-thumbnail.cmc-swipe-ready:not(.active) > .flux_header {
+	grid-template-rows: auto;
+}
+
+body:not(.reader) main#stream div.flux.cmc-no-thumbnail.cmc-swipe-ready:not(.active) > .flux_header > .item.thumbnail {
+	display: none !important;
+	aspect-ratio: auto;
+}
+
+body:not(.reader) main#stream div.flux.cmc-no-thumbnail.cmc-swipe-ready:not(.active) .cmc-text-content {
+	position: relative;
+	z-index: 3;
+	box-sizing: border-box;
+	grid-column: 1 / -1;
+	grid-row: 1;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: clamp(230px, 62vw, 290px);
+	min-width: 0;
+	padding: 18px 18px calc(var(--cmc-meta-height) + 20px);
+	background:
+		radial-gradient(circle at 12% 8%, rgb(76 125 167 / 20%), transparent 34%),
+		radial-gradient(circle at 92% 100%, rgb(113 78 151 / 16%), transparent 38%),
+		linear-gradient(145deg, #1a2028 0%, #14171c 52%, #17151b 100%);
+	overflow: hidden;
+}
+
+body:not(.reader) main#stream div.flux.cmc-no-thumbnail.cmc-swipe-ready:not(.active) .cmc-text-content::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-bottom: 1px solid rgb(255 255 255 / 6%);
+	background: linear-gradient(180deg, rgb(255 255 255 / 2%), transparent 38%);
+	pointer-events: none;
+}
+
+body:not(.reader) main#stream div.flux.cmc-no-thumbnail.cmc-swipe-ready:not(.active) .cmc-text-content > a.title {
+	position: relative !important;
+	z-index: 1;
+	display: -webkit-box !important;
+	width: auto !important;
+	min-width: 0 !important;
+	height: auto !important;
+	margin: 0 86px 0 0 !important;
+	padding: 0 0 13px !important;
+	border-bottom: 1px solid rgb(255 255 255 / 10%);
+	border-radius: 0 !important;
+	background: transparent !important;
+	color: var(--cmc-text) !important;
+	font-size: clamp(1.18rem, 3.4vw, 1.42rem) !important;
+	font-weight: 720 !important;
+	line-height: 1.24 !important;
+	text-decoration: none !important;
+	text-shadow: none;
+	white-space: normal !important;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	overflow: hidden;
+}
+
+body:not(.reader) main#stream div.flux.cmc-no-thumbnail.cmc-swipe-ready:not(.active) .cmc-text-content > .summary {
+	position: relative;
+	z-index: 1;
+	display: -webkit-box !important;
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	max-width: 100%;
+	margin: 13px 0 0 !important;
+	padding: 0 !important;
+	color: #c5c9d1 !important;
+	font-size: clamp(0.92rem, 2.5vw, 1rem) !important;
+	font-weight: 400;
+	line-height: 1.48 !important;
+	white-space: normal !important;
+	overflow-wrap: anywhere;
+	word-break: normal;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 7;
+	line-clamp: 7;
+	overflow: hidden;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) .item.titleAuthorSummaryDate > .date {
+	position: static !important;
+	z-index: 4;
+	grid-column: 3;
+	grid-row: 1;
+	align-self: end;
+	display: flex !important;
+	align-items: center;
+	width: auto !important;
+	height: var(--cmc-meta-height) !important;
+	min-width: max-content;
+	margin: 0 !important;
+	padding: 0 14px 0 8px !important;
+	color: #d7dae0 !important;
+	font-size: 0.82rem !important;
+	line-height: 1 !important;
+	white-space: nowrap;
+}
+
+/* Metadata shares the media row: favorite, favicon/feed name, then date. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.bookmark) {
+	position: relative !important;
+	z-index: 12;
+	grid-column: 1;
+	grid-row: 1;
+	align-self: end !important;
+	display: flex !important;
+	order: initial !important;
+	width: 44px !important;
+	height: var(--cmc-meta-height) !important;
+	min-height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	pointer-events: auto !important;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.bookmark) > a.bookmark {
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	width: 44px !important;
+	height: var(--cmc-meta-height) !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border-radius: 0 !important;
+	background-color: transparent !important;
+	visibility: visible !important;
+	opacity: 0.92;
+	pointer-events: auto !important;
+}
+
+body:not(.reader) main#stream div.flux.favorite.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.bookmark) > a.bookmark {
+	filter: brightness(1.5) sepia(1) hue-rotate(-25deg) saturate(4) contrast(1.2);
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.website {
+	position: static !important;
+	z-index: 4;
+	grid-column: 2;
+	grid-row: 1;
+	align-self: end;
+	display: flex !important;
+	order: initial !important;
+	flex: none !important;
+	width: auto !important;
+	height: var(--cmc-meta-height) !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	pointer-events: auto !important;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.website::before {
+	display: none !important;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.website > a.item-element {
+	display: flex !important;
+	align-items: center;
+	gap: 8px;
+	width: 100% !important;
+	height: var(--cmc-meta-height) !important;
+	min-width: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	color: #eef0f4 !important;
+	font-size: 0.82rem !important;
+	font-weight: 650;
+	text-decoration: none;
+	visibility: visible !important;
+	pointer-events: auto !important;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.website .favicon {
+	display: block !important;
+	flex: 0 0 27px;
+	width: 27px !important;
+	height: 27px !important;
+	margin: 0 !important;
+	border-radius: 50%;
+	filter: none !important;
+	object-fit: cover;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.website .websiteName {
+	display: block !important;
+	min-width: 0;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+/* Keep read and inline-reader actions as small image overlays instead of a toolbar row. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.read),
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.link {
+	position: absolute !important;
+	top: 10px;
+	z-index: 12;
+	display: flex !important;
+	width: 38px !important;
+	height: 38px !important;
+	min-height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	backdrop-filter: none !important;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.read) {
+	right: 56px;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.link {
+	right: 10px;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.read) > a.read,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.link > a {
+	box-sizing: border-box;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	width: 38px !important;
+	height: 38px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 1px solid var(--cmc-card-control-border) !important;
+	border-radius: 999px !important;
+	background-color: var(--cmc-card-control-surface) !important;
+	box-shadow: none !important;
+	backdrop-filter: none !important;
+	visibility: visible !important;
+	opacity: 0.9;
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.read) > a.read:hover,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.read) > a.read:focus-visible,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.link > a:hover,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.link > a:focus-visible {
+	background-color: var(--cmc-card-control-surface-hover) !important;
+	border-color: rgb(255 255 255 / 20%) !important;
+	opacity: 1;
+}
+
+/* Hide gesture-replaced or disabled card-row controls; expanded entries retain them. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.karakeepButton),
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.labels,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.share {
+	display: none !important;
+}
+
+/* Fine-pointer desktops keep Favorite as a bottom-left button and move
+   Karakeep into the top-right overlay cluster. */
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header {
+	grid-template-columns: 48px minmax(0, 1fr) auto;
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.bookmark) {
+	width: 48px !important;
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.website {
+	grid-column: 2;
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) .item.titleAuthorSummaryDate > .date {
+	grid-column: 3;
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.bookmark) > a.bookmark {
+	box-sizing: border-box;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	width: 38px !important;
+	height: 38px !important;
+	margin: 5px !important;
+	padding: 0 !important;
+	border: 1px solid var(--cmc-card-control-border) !important;
+	border-radius: 999px !important;
+	background-color: var(--cmc-card-control-surface) !important;
+	box-shadow: none !important;
+	backdrop-filter: none !important;
+	visibility: visible !important;
+	opacity: 0.92;
+	pointer-events: auto !important;
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.bookmark) > a.bookmark:hover,
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.bookmark) > a.bookmark:focus-visible {
+	background-color: var(--cmc-card-control-surface-hover) !important;
+	border-color: rgb(255 255 255 / 20%) !important;
+	opacity: 1;
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.karakeepButton) {
+	position: absolute !important;
+	top: 10px;
+	right: 102px;
+	z-index: 12;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	order: initial !important;
+	width: 38px !important;
+	height: 38px !important;
+	min-height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.karakeepButton) > a.karakeepButton {
+	box-sizing: border-box;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	width: 38px !important;
+	height: 38px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 1px solid var(--cmc-card-control-border) !important;
+	border-radius: 999px !important;
+	background-color: var(--cmc-card-control-surface) !important;
+	box-shadow: none !important;
+	backdrop-filter: none !important;
+	visibility: visible !important;
+	opacity: 0.9;
+	pointer-events: auto !important;
+	background-image: none !important;
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.karakeepButton) > a.karakeepButton > .icon,
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.karakeepButton) > a.karakeepButton > img.icon {
+	width: 18px;
+	height: 18px;
+	max-width: 18px;
+	max-height: 18px;
+	background: transparent !important;
+	box-shadow: none !important;
+	filter: brightness(0) invert(1);
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.karakeepButton) > a.karakeepButton:hover,
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.karakeepButton) > a.karakeepButton:focus-visible {
+	background-color: var(--cmc-card-control-surface-hover) !important;
+	border-color: rgb(255 255 255 / 20%) !important;
+	opacity: 1;
+}
+
+/* Desktop top-right actions stay out of the way until the card is hovered or focused. */
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.read),
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.link,
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.karakeepButton) {
+	opacity: 0 !important;
+	pointer-events: none !important;
+	transition: opacity 0.15s ease;
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active):hover > .flux_header > li.item.manage:has(a.read),
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active):hover > .flux_header > li.item.link,
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active):hover > .flux_header > li.item.manage:has(a.karakeepButton),
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active):focus-within > .flux_header > li.item.manage:has(a.read),
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active):focus-within > .flux_header > li.item.link,
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active):focus-within > .flux_header > li.item.manage:has(a.karakeepButton) {
+	opacity: 1 !important;
+	pointer-events: auto !important;
+}
+
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-reveal-controls:not(.active) > .flux_header > li.item.manage:has(a.read),
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-reveal-controls:not(.active) > .flux_header > li.item.link,
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-reveal-controls:not(.active) > .flux_header > li.item.manage:has(a.karakeepButton) {
+	opacity: 1 !important;
+	pointer-events: auto !important;
+	transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.read),
+	body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.link,
+	body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.manage:has(a.karakeepButton) {
+		transition: none;
+	}
+}
+
+body:not(.reader) main#stream div.flux.favorite.cmc-swipe-ready:not(.active) {
+	background: var(--cmc-card-background) !important;
+}
+
+@media (max-width: 840px) {
+	body.youlag-active:not(.reader) main#stream {
+		grid-template-columns: minmax(0, 1fr) !important;
+		gap: 18px !important;
+		padding: 12px !important;
+		background: #090a0b;
+	}
+
+	body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) {
+		width: 100% !important;
+		max-width: none !important;
+	}
+
+	body.youlag-active.youlag-mobile-layout--grid:not(.reader) main#stream {
+		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+		gap: 4px !important;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body:not(.reader) main#stream div.flux.cmc-swipe-ready > .flux_header {
+		transition-duration: 1ms !important;
+	}
+}

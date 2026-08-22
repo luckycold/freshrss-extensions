@@ -1,0 +1,13 @@
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+node_modules/
+__pycache__/
+*.pyc
+.extmgr-source.json
+.extmgr-rollback-*
+release-notes.md

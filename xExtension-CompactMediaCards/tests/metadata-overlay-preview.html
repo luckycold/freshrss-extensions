@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compact Media Cards overlay preview</title>
+<link rel="stylesheet" href="../static/compact-media-cards.css">
+<style>
+html,body{margin:0;background:#090a0b;color:#fff;font-family:system-ui,sans-serif}body{padding:24px}main#stream{display:block!important;max-width:768px;margin:auto;padding:0!important}.flux{margin-bottom:18px!important}.fixture-image{background:#243042}.fixture-image svg{width:100%;height:100%;display:block}.icon{font-size:24px;color:#fff}.item{list-style:none}.reader-button{color:#fff;text-decoration:none;font-size:22px}
+</style>
+</head>
+<body>
+<main id="stream">
+<div class="flux cmc-swipe-ready not_read">
+<ul class="flux_header">
+<li class="item thumbnail fixture-image">
+<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#516071"/><stop offset=".48" stop-color="#c2946f"/><stop offset="1" stop-color="#233b43"/></linearGradient></defs>
+<rect width="1600" height="900" fill="url(#bg)"/><circle cx="1080" cy="360" r="250" fill="#d9a77c" opacity=".7"/><rect x="180" y="150" width="500" height="530" rx="60" fill="#18232e" opacity=".7"/><text x="800" y="450" text-anchor="middle" fill="white" opacity=".85" font-size="110" font-weight="700">MEDIA PREVIEW</text>
+</svg>
+</li>
+<li class="item titleAuthorSummaryDate"><a class="title" href="#">Practice Loving Her</a><span class="date">1 hour ago</span></li>
+<li class="item manage"><a class="bookmark" href="#"><span class="icon">☆</span></a></li>
+<li class="item website"><a class="item-element" href="#"><svg class="favicon" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#e21b2d"/><path d="M13 10l10 6-10 6z" fill="white"/></svg><span class="websiteName">Jordan B Peterson</span></a></li>
+<li class="item manage"><a class="read reader-button" href="#">✉</a></li>
+<li class="item link"><a class="reader-button" href="#">▤</a></li>
+</ul>
+</div>
+</main>
+<script>
+window.addEventListener('load', () => {
+	const selectors = {
+		header: '.flux_header',
+		media: '.item.thumbnail',
+		title: 'a.title',
+		favorite: 'a.bookmark',
+		feed: 'li.website',
+		date: '.date',
+	};
+	const boxes = {};
+	for (const [name, selector] of Object.entries(selectors)) {
+		const rect = document.querySelector(selector).getBoundingClientRect();
+		boxes[name] = { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, height: rect.height };
+	}
+	const output = document.createElement('pre');
+	output.id = 'computed-layout';
+	output.hidden = true;
+	output.textContent = JSON.stringify(boxes);
+	document.body.append(output);
+});
+</script>
+</body>
+</html>

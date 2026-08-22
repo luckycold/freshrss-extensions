@@ -1,0 +1,8 @@
+{
+  "name": "Retry-After Manager",
+  "author": "luckycold",
+  "description": "Find active FreshRSS Retry-After locks and reset individual feeds safely.",
+  "version": "1.0.0",
+  "entrypoint": "RetryAfterManager",
+  "type": "system"
+}

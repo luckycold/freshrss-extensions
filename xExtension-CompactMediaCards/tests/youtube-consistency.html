@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compact Media Cards YouTube consistency fixture</title>
+<link rel="stylesheet" href="/config/.hermes/cache/FreshRSS-1.29.1/p/themes/base-theme/frss.css">
+<link rel="stylesheet" href="/config/.hermes/cache/FreshRSS-1.29.1/p/themes/Mapco/mapco.css">
+<link rel="stylesheet" href="/config/.hermes/cache/freshrss-upstreams-20260821-153249/youlag/static/theme.min.css">
+<link rel="stylesheet" href="../static/compact-media-cards.css">
+<link rel="stylesheet" href="/config/.hermes/cache/xExtension-OledBlackOverlay/static/oled-black.css">
+<style>
+html,body{margin:0;background:#000;color:#fff;font-family:system-ui,sans-serif}
+body{padding:4px}
+main#stream{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:start;gap:6px!important;width:880px;padding:0!important}
+.item{list-style:none}.icon{display:block;color:#fff;font-size:18px;line-height:1;background:none!important}
+</style>
+</head>
+<body class="youlag-active">
+<main id="stream">
+  <div id="shortcircuit-card" class="flux current not_read" data-id="1">
+    <ul id="shortcircuit-header" class="flux_header">
+      <li id="shortcircuit-media" class="item thumbnail"><img id="shortcircuit-image" alt="" src="https://i3.ytimg.com/vi/2qlV1KN_67Q/hqdefault.jpg"></li>
+      <li class="item titleAuthorSummaryDate"><a id="shortcircuit-title" class="title" href="#">The perfect monitor will cost you - Dell UltraSharp U3226Q</a><span id="shortcircuit-date" class="date">2 hours ago</span></li>
+      <li id="shortcircuit-favorite" class="item manage"><a class="bookmark" href="#">☆</a></li>
+      <li id="shortcircuit-feed" class="item website"><a class="item-element" href="#"><span class="websiteName">ShortCircuit</span></a></li>
+      <li id="shortcircuit-read" class="item manage"><a class="read" href="#"><span class="icon">✉</span></a></li>
+      <li id="shortcircuit-reader" class="item link"><a href="#"><span class="icon">▣</span></a></li>
+    </ul>
+  </div>
+  <div id="majesty-card" class="flux not_read" data-id="2">
+    <ul id="majesty-header" class="flux_header">
+      <li id="majesty-media" class="item thumbnail"><img id="majesty-image" alt="" src="https://i.ytimg.com/vi/dNi3sD1dkgs/maxresdefault.jpg"></li>
+      <li class="item titleAuthorSummaryDate"><a id="majesty-title" class="title" href="#">Philosophers DEBATE personal identity</a><span id="majesty-date" class="date">2 weeks ago</span></li>
+      <li id="majesty-favorite" class="item manage"><a class="bookmark" href="#">☆</a></li>
+      <li id="majesty-feed" class="item website"><a class="item-element" href="#"><span class="websiteName">Majesty of Reason - YouTube</span></a></li>
+      <li id="majesty-read" class="item manage"><a class="read" href="#"><span class="icon">✉</span></a></li>
+      <li id="majesty-reader" class="item link"><a href="#"><span class="icon">▣</span></a></li>
+    </ul>
+  </div>
+</main>
+<script>window.context={extensions:{compactMediaCards:{leftAction:'read',rightAction:'favorite'}}};</script>
+<script src="../static/compact-media-cards.js"></script>
+<script>
+setTimeout(() => {
+  const rect = (id) => {
+    const box = document.getElementById(id).getBoundingClientRect();
+    return {top:box.top,bottom:box.bottom,width:box.width,height:box.height};
+  };
+  const surface = (id) => {
+    const style = getComputedStyle(document.getElementById(id));
+    return {background:style.backgroundColor,borderWidth:style.borderWidth,boxShadow:style.boxShadow,backdropFilter:style.backdropFilter};
+  };
+  const output=document.createElement('pre');
+  output.id='youtube-consistency-results';
+  output.textContent=JSON.stringify({
+    firstSrc:document.getElementById('shortcircuit-image').src,
+    firstStatus:document.getElementById('shortcircuit-image').dataset.cmcYoutubeUpgrade,
+    shortCard:rect('shortcircuit-card'),shortHeader:rect('shortcircuit-header'),shortMedia:rect('shortcircuit-media'),
+    shortTitle:rect('shortcircuit-title'),shortFavorite:rect('shortcircuit-favorite'),shortFeed:rect('shortcircuit-feed'),shortDate:rect('shortcircuit-date'),
+    majestyCard:rect('majesty-card'),majestyHeader:rect('majesty-header'),majestyMedia:rect('majesty-media'),
+    shortRead:surface('shortcircuit-read'),shortReader:surface('shortcircuit-reader')
+  });
+  document.body.append(output);
+},1800);
+</script>
+</body>
+</html>

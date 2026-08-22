@@ -1,0 +1,555 @@
+/*
+ * OLED Black Overlay
+ * Loaded after Mapco, Youlag, and Compact Media Cards.
+ * This extension changes surfaces only; semantic accent/action colors stay intact.
+ */
+
+:root {
+  color-scheme: dark;
+  --yl-color-body-background: #000;
+  --yl-color-gradient-surface-3: linear-gradient(
+    135deg,
+    #050505 0%,
+    #101010 45%,
+    #050505 100%
+  );
+  --cmc-card-background: #000;
+  --frss-noThumbnailImage-background-color: #000;
+  --sid-bg: #000;
+  --sid-bg-alt: #000;
+  --sid-bg-dark: #0b0b0b;
+  --sid-sep: #202020;
+  --main-first-dark: #0b0b0b;
+  --main-first-darker: #000;
+  --grey-light: #000;
+  --grey-lighter: #050505;
+  --grey-medium-light: #181818;
+  --unread-bg: #000;
+  --unread-bg-light: #050505;
+  --oled-control-surface: rgb(255 255 255 / 4%);
+  --oled-control-surface-hover: rgb(255 255 255 / 8%);
+  --oled-control-border: rgb(255 255 255 / 9%);
+  --oled-control-text: #f6f7f9;
+}
+
+html,
+body,
+#global,
+main#stream,
+main.prompt,
+#slider,
+#panel,
+#yl_category_toolbar,
+.aside,
+.aside.aside_feed,
+.nav.nav-list.aside,
+.nav.nav-list.aside ul,
+.nav-list .item,
+.tree .tree-folder .tree-folder-title,
+.tree .tree-folder .tree-folder-items {
+  background-color: #000 !important;
+}
+
+/* Navigation and overlays retain separation with neutral, non-blue elevation. */
+.header {
+  background: #000 !important;
+}
+
+@media (max-width: 840px) {
+  .header {
+    --sid-bg: #000;
+    background: #000 !important;
+    backdrop-filter: none;
+  }
+}
+
+.header,
+.dropdown-menu,
+.dropdown-menu > li,
+#yl_nav_menu_container_content,
+#global #overlay #panel,
+#global #overlay #panel .flux,
+#global #overlay #panel .flux .flux_header {
+  background-color: #000 !important;
+  background-image: none !important;
+}
+
+.dropdown-menu > li:hover,
+.tree .tree-folder .tree-folder-items .item:hover,
+.nav-list .item:hover,
+.youlag-sidenav--expanded
+  nav.aside.aside_feed
+  .stick.configure-feeds
+  #btn-add:hover,
+#slider .btn.toggle_aside:hover {
+  background-color: #101010 !important;
+  background-image: none !important;
+}
+
+/* Keep the global settings gear as quiet as the other OLED controls. */
+body.youlag-active
+  header.header
+  .item.configure
+  .dropdown
+  > .btn.dropdown-toggle {
+  border: 1px solid var(--oled-control-border) !important;
+  border-radius: 999px !important;
+  background-color: var(--oled-control-surface) !important;
+  color: var(--oled-control-text) !important;
+  box-shadow: none !important;
+}
+
+body.youlag-active
+  header.header
+  .item.configure
+  .dropdown
+  > .btn.dropdown-toggle:hover,
+body.youlag-active
+  header.header
+  .item.configure
+  .dropdown
+  > .btn.dropdown-toggle:focus-visible,
+body.youlag-active
+  header.header
+  .item.configure
+  #dropdown-configure:target
+  + .btn.dropdown-toggle {
+  background-color: var(--oled-control-surface-hover) !important;
+}
+
+/* Complete the desktop search field and magnifier as one OLED pill. */
+body.youlag-active header.header .item.search .stick {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0 !important;
+}
+
+body.youlag-active header.header .item.search input,
+body.youlag-active header.header .item.search .btn {
+  box-sizing: border-box;
+  height: 40px;
+  margin: 0 !important;
+  border: 1px solid var(--oled-control-border) !important;
+  background-color: var(--oled-control-surface) !important;
+  background-image: none !important;
+  color: var(--oled-control-text) !important;
+  box-shadow: none !important;
+}
+
+body.youlag-active header.header .item.search input {
+  border-radius: 999px 0 0 999px !important;
+  border-right-width: 0 !important;
+}
+
+body.youlag-active header.header .item.search .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  min-width: 40px;
+  padding: 0;
+  border-radius: 0 999px 999px 0 !important;
+  border-left-width: 0 !important;
+}
+
+body.youlag-active header.header .item.search input:hover,
+body.youlag-active header.header .item.search input:focus,
+body.youlag-active header.header .item.search input:focus-visible,
+body.youlag-active header.header .item.search .btn:hover,
+body.youlag-active header.header .item.search .btn:focus-visible,
+body.youlag-active header.header .item.search input:hover ~ .btn,
+body.youlag-active header.header .item.search input:focus ~ .btn,
+body.youlag-active header.header .item.search input:focus-visible ~ .btn {
+  background-color: var(--oled-control-surface-hover) !important;
+}
+
+body.youlag-active header.header .item.search .btn > img.icon {
+  display: inline-block !important;
+  width: 16px;
+  height: 16px;
+}
+
+html[dir="rtl"] body.youlag-active header.header .item.search input {
+  border-radius: 0 999px 999px 0 !important;
+  border-right-width: 1px !important;
+  border-left-width: 0 !important;
+}
+
+html[dir="rtl"] body.youlag-active header.header .item.search .btn {
+  border-radius: 999px 0 0 999px !important;
+  border-left-width: 1px !important;
+  border-right-width: 0 !important;
+}
+
+/* Match the phone-only search trigger to the quiet global settings gear. */
+@media (max-width: 840px) {
+  body.youlag-active
+    #dropdown-search-wrapper.only-mobile
+    > #toggle-search.btn.dropdown-toggle {
+    border: 1px solid var(--oled-control-border) !important;
+    border-radius: 999px !important;
+    color: var(--oled-control-text) !important;
+    box-shadow: none !important;
+  }
+
+  body.youlag-active
+    #dropdown-search-wrapper.only-mobile
+    > #toggle-search.btn.dropdown-toggle:not(.active) {
+    background-color: var(--oled-control-surface) !important;
+  }
+
+  body.youlag-active
+    #dropdown-search-wrapper.only-mobile
+    > #toggle-search.btn.dropdown-toggle:not(.active):hover,
+  body.youlag-active
+    #dropdown-search-wrapper.only-mobile
+    > #toggle-search.btn.dropdown-toggle:not(.active):focus-visible,
+  body.youlag-active
+    #dropdown-search-wrapper.only-mobile
+    > #dropdown-search:target
+    + #toggle-search.btn.dropdown-toggle:not(.active) {
+    background-color: var(--oled-control-surface-hover) !important;
+  }
+}
+
+/* Reuse Configure view's quiet OLED control surface throughout view controls. */
+body.youlag-active #yl_category_toolbar #yl_nav_menu_container_toggle,
+body.youlag-active #yl_category_toolbar #yl_nav_menu_manage_current_feed,
+body.youlag-active #yl_category_toolbar #yl_stream_category_filter_toggle,
+body.youlag-active #yl_category_toolbar .yl-stream-category-filter__button {
+  border: 1px solid var(--oled-control-border) !important;
+  border-radius: 999px !important;
+  background: var(--oled-control-surface) !important;
+  color: var(--oled-control-text) !important;
+  box-shadow: none !important;
+}
+
+body.youlag-active #yl_category_toolbar #yl_nav_menu_container_toggle:hover,
+body.youlag-active #yl_category_toolbar #yl_nav_menu_manage_current_feed:hover,
+body.youlag-active #yl_category_toolbar #yl_stream_category_filter_toggle:hover,
+body.youlag-active
+  #yl_category_toolbar
+  .yl-stream-category-filter__button:hover {
+  background: var(--oled-control-surface-hover) !important;
+}
+
+body.youlag-active #yl_nav_menu_container_content .btn {
+  border: 1px solid var(--oled-control-border) !important;
+  border-radius: 999px !important;
+  color: var(--oled-control-text) !important;
+  box-shadow: none !important;
+}
+
+body.youlag-active #yl_nav_menu_container_content #toggle-userqueries,
+body.youlag-active #yl_nav_menu_container_content #mark-read-more,
+body.youlag-active #yl_nav_menu_container_content #toggle-order {
+  background-image: none !important;
+}
+
+body.youlag-active
+  #yl_nav_menu_container_content
+  #toggle-userqueries
+  > img.icon,
+body.youlag-active #yl_nav_menu_container_content #mark-read-more > img.icon,
+body.youlag-active #yl_nav_menu_container_content #toggle-order > img.icon {
+  display: inline-block !important;
+  width: 16px;
+  height: 16px;
+}
+
+body.youlag-active
+  #yl_nav_menu_container_content
+  .btn:not(.active):not(.btn-important):not(.btn-attention) {
+  background-color: var(--oled-control-surface) !important;
+}
+
+body.youlag-active
+  #yl_nav_menu_container_content
+  .btn:not(.active):not(.btn-important):not(.btn-attention):hover,
+body.youlag-active
+  #yl_nav_menu_container_content
+  .dropdown-target:target
+  + .btn:not(.active) {
+  background-color: var(--oled-control-surface-hover) !important;
+}
+
+body.youlag-active #yl_nav_menu_container_content > .group,
+body.youlag-active #yl_nav_menu_container_content > .stick,
+body.youlag-active #yl_nav_menu_container_content #mark-read-menu {
+  display: flex;
+  align-items: center;
+  gap: 5px !important;
+}
+
+body.youlag-active #yl_nav_menu_container_content #mark-read-menu {
+  height: 41px !important;
+  min-height: 41px !important;
+  box-sizing: border-box;
+  align-items: stretch;
+  gap: 0 !important;
+}
+
+body.youlag-active
+  #yl_nav_menu_container_content
+  #mark-read-menu
+  > .read_all.btn {
+  height: 100% !important;
+  box-sizing: border-box;
+  border-right-width: 0 !important;
+  border-radius: 999px 0 0 999px !important;
+}
+
+body.youlag-active
+  #yl_nav_menu_container_content
+  #mark-read-menu
+  #nav_menu_read {
+  display: flex;
+  align-self: stretch;
+  float: none;
+}
+
+body.youlag-active
+  #yl_nav_menu_container_content
+  #mark-read-menu
+  #nav_menu_read
+  > .dropdown-toggle.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  min-width: 38px;
+  height: 100%;
+  box-sizing: border-box;
+  border-left-width: 1px !important;
+  border-radius: 0 999px 999px 0 !important;
+  background-position: center !important;
+}
+
+@media (max-width: 840px) {
+  body.youlag-active #yl_nav_menu_container_content #mark-read-menu {
+    height: auto !important;
+    min-height: 0 !important;
+    align-items: center;
+  }
+
+  body.youlag-active
+    #yl_nav_menu_container_content
+    #mark-read-menu
+    #nav_menu_read {
+    align-self: auto;
+  }
+
+  body.youlag-active
+    #yl_nav_menu_container_content
+    #mark-read-menu
+    #nav_menu_read
+    > .dropdown-toggle.btn {
+    display: block;
+    width: auto;
+    min-width: 0;
+    height: auto;
+    padding-right: 17px;
+    padding-left: 17px;
+    text-align: center;
+    border-radius: 999px !important;
+  }
+
+  body.youlag-active
+    #yl_nav_menu_container_content
+    #mark-read-menu
+    #mark-read-more::before {
+    content: none !important;
+  }
+}
+
+html[dir="rtl"]
+  body.youlag-active
+  #yl_nav_menu_container_content
+  #mark-read-menu
+  > .read_all.btn {
+  border-right-width: 1px !important;
+  border-left-width: 0 !important;
+  border-radius: 0 999px 999px 0 !important;
+}
+
+html[dir="rtl"]
+  body.youlag-active
+  #yl_nav_menu_container_content
+  #mark-read-menu
+  #nav_menu_read
+  > .dropdown-toggle.btn {
+  border-radius: 999px 0 0 999px !important;
+}
+
+body.youlag-active
+  #aside_feed.aside
+  .category:not(.important)
+  .title[data-unread]:not([data-unread="0"])::after,
+body.youlag-active
+  #aside_feed.aside
+  a.item-title[data-unread]:not([data-unread="0"])::after {
+  border: 1px solid var(--oled-control-border) !important;
+  border-radius: 999px !important;
+  background: var(--oled-control-surface) !important;
+  color: var(--oled-control-text) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Youlag feed/card surfaces. Keep favorite, unread, and action accents intact. */
+body.youlag-active:not(.reader) main#stream div.flux:not(.favorite),
+body.youlag-active:not(.reader) main#stream div.flux:not(.favorite):hover,
+body.youlag-inactive:not(.reader) main#stream div.flux:not(.favorite),
+body.youlag-inactive:not(.reader) main#stream div.flux.not_read:not(.favorite),
+body.youlag-inactive:not(.reader)
+  main#stream
+  div.flux.active.current
+  .flux_content,
+body.youlag-active:not(.reader)
+  main#stream
+  div.flux.current.active
+  .flux_content,
+body.youlag-active:not(.reader) main#stream div.flux.active.current article {
+  background: #000 !important;
+}
+
+body.youlag-active:not(.reader)
+  main#stream
+  div.flux
+  .flux_header
+  .item.thumbnail,
+body.youlag-active:not(.reader)
+  main#stream
+  div.flux
+  .flux_header
+  .item.thumbnail::before,
+body.youlag-active:not(.reader)
+  main#stream
+  div.flux
+  .flux_header
+  .item.thumbnail
+  img,
+body.youlag-inactive:not(.reader)
+  main#stream
+  div.flux
+  ul.flux_header
+  .item.thumbnail {
+  background-color: #000 !important;
+  background-image: none !important;
+}
+
+/* Compact Media Cards: true black behind real media and in text-only fallbacks. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active),
+body:not(.reader)
+  main#stream
+  div.flux.cmc-swipe-ready:not(.active)
+  > .flux_header,
+body:not(.reader)
+  main#stream
+  div.flux.cmc-swipe-ready:not(.active)
+  > .flux_header
+  > .item.thumbnail,
+body:not(.reader)
+  main#stream
+  div.flux.cmc-swipe-ready:not(.active)
+  > .flux_header
+  > .item.thumbnail::before,
+body:not(.reader)
+  main#stream
+  div.flux.cmc-swipe-ready:not(.active)
+  > .flux_header
+  > .item.thumbnail
+  img,
+body:not(.reader) main#stream div.flux.cmc-no-thumbnail,
+body:not(.reader) main#stream div.flux.cmc-no-thumbnail .cmc-text-content {
+  background-color: #000 !important;
+}
+
+body:not(.reader)
+  main#stream
+  div.flux.cmc-swipe-ready:not(.active)
+  > .flux_header
+  > .item.thumbnail,
+body:not(.reader)
+  main#stream
+  div.flux.cmc-swipe-ready:not(.active)
+  > .flux_header
+  > .item.thumbnail::before,
+body:not(.reader) main#stream div.flux.cmc-no-thumbnail .cmc-text-content {
+  background-image: none !important;
+}
+
+/* Expanded article, reader, theater, miniplayer, tags, and split-pane surfaces. */
+#stream.reader,
+#stream.reader .flux,
+#stream.reader .flux .content,
+#stream.reader .flux .flux_content,
+#ylArticleSplitPane,
+#youlagTheaterModal,
+.youlag-mode--miniplayer #youlagTheaterModal,
+#youlagVideoMoreContentContainer,
+#youlagVideoMoreContentContainer .youlag-video-description-container,
+#youlagTagsModal .yl-tags-content {
+  background-color: #000 !important;
+  background-image: none !important;
+}
+
+.youlag-inactive:not(.reader).yl-article-split-view
+  #ylArticleSplitPane::before {
+  background: rgb(0 0 0 / 88%) !important;
+}
+
+#youlagCloseModal,
+#youlagMinimizeModal,
+#youlagTagsModal .yl-tags-list .yl-tags-list-item:hover,
+#youlagVideoMoreContentContainer
+  #youlagRelatedVideosContainer
+  .youlag-related-video-item:hover {
+  background: #101010 !important;
+}
+
+/* Mapco settings, forms, tables, and boxes should not fall back to white surfaces. */
+.box,
+.box .box-title,
+.box .box-content,
+.post,
+form,
+fieldset,
+table,
+thead,
+tbody,
+tr,
+th,
+td,
+input,
+select,
+textarea,
+.input,
+.form-group,
+.notification,
+.prompt {
+  background-color: #000 !important;
+}
+
+input,
+select,
+textarea,
+.input {
+  color: #e8e8ec !important;
+  border-color: #292929 !important;
+}
+
+input:hover,
+select:hover,
+textarea:hover,
+input:focus,
+select:focus,
+textarea:focus {
+  background-color: #090909 !important;
+  border-color: #4a4a4a !important;
+}
+
+/* Neutral scrollbars avoid the remaining blue-black chrome. */
+* {
+  scrollbar-color: #353535 #000;
+}

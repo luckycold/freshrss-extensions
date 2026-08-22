@@ -1,0 +1,8 @@
+{
+  "name": "OLED Black Overlay",
+  "author": "luckycold",
+  "description": "Applies true OLED-black surfaces over Youlag, Mapco, and Compact Media Cards without modifying them.",
+  "version": "1.0.0",
+  "entrypoint": "OledBlackOverlay",
+  "type": "user"
+}
