@@ -55,6 +55,8 @@
 	const COMMIT_MAX = 108;
 	const COMMIT_RATIO = 0.22;
 	const FAVORITE_PENDING_TIMEOUT = 5000;
+	const IMPACT_DURATION = 90;
+	const IMPACT_HOLD = 60;
 	const SNAP_BACK_DURATION = 280;
 	const SETTLE_RESET_DELAY = 440;
 	const MASONRY_ROW_HEIGHT = 1;
@@ -439,7 +441,7 @@
 	}
 
 	function resetCard(card) {
-		card.classList.remove('cmc-dragging', 'cmc-settling', 'cmc-swipe-left', 'cmc-swipe-right');
+		card.classList.remove('cmc-dragging', 'cmc-settling', 'cmc-impacting', 'cmc-swipe-left', 'cmc-swipe-right');
 		card.style.removeProperty('--cmc-drag-x');
 		card.style.removeProperty('--cmc-swipe-progress');
 		card.style.removeProperty('--cmc-indicator-opacity');
@@ -557,22 +559,35 @@
 
 	function commitGesture(gesture, direction, action) {
 		const card = gesture.card;
-		card.classList.remove('cmc-dragging');
-		card.classList.add('cmc-settling');
-		card.style.setProperty('--cmc-drag-x', '0px');
-		setIndicatorProgress(card, 0, direction);
-		suppressedCard = card;
-		suppressClickUntil = Date.now() + 450;
+		const impactX = (direction === 'left' ? -DRAG_LIMIT : DRAG_LIMIT) + 'px';
+		const impactPhase = IMPACT_DURATION + IMPACT_HOLD;
 
+		// Finish the swipe into the drag limit like remaining momentum hitting a wall,
+		// then use the existing snap-back to return the card home.
+		card.classList.add('cmc-settling', 'cmc-impacting');
+		card.classList.remove('cmc-dragging');
+		card.style.setProperty('--cmc-drag-x', impactX);
+		setIndicatorProgress(card, 1, direction);
+		suppressedCard = card;
+		suppressClickUntil = Date.now() + impactPhase + 450;
+
+		window.setTimeout(function () {
+			if (!card.isConnected) {
+				return;
+			}
+			card.classList.remove('cmc-impacting');
+			card.style.setProperty('--cmc-drag-x', '0px');
+			setIndicatorProgress(card, 0, direction);
+		}, impactPhase);
 		window.setTimeout(async function () {
 			await executeAction(action, card);
 			updateActionPresentation(card);
-		}, SNAP_BACK_DURATION);
+		}, impactPhase + SNAP_BACK_DURATION);
 		window.setTimeout(function () {
 			if (card.isConnected) {
 				resetCard(card);
 			}
-		}, SETTLE_RESET_DELAY);
+		}, impactPhase + SETTLE_RESET_DELAY);
 	}
 
 	function onPointerEnd(event) {
