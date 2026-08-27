@@ -282,12 +282,28 @@
           document.querySelector("#current-image-card").classList.add("cmc-reveal-controls");
         }
         const revealed = measure();
+        const swipeCard = document.querySelector("#image-card");
+        const swipeHeader = swipeCard.querySelector(".flux_header");
+        const swipeDuration = () => getComputedStyle(swipeHeader).transitionDuration;
+        swipeCard.classList.add("cmc-dragging");
+        const draggingDuration = swipeDuration();
+        swipeCard.classList.remove("cmc-dragging");
+        swipeCard.classList.add("cmc-settling", "cmc-impacting");
+        const impactingDuration = swipeDuration();
+        swipeCard.classList.remove("cmc-impacting");
+        const settlingDuration = swipeDuration();
+        swipeCard.classList.remove("cmc-settling");
         const output = document.createElement("pre");
         output.id = "height-controls-results";
         output.textContent = JSON.stringify({
           ...idle,
           revealed,
           revealClass: document.querySelector("#image-card").className,
+          swipeTimings: {
+            dragging: draggingDuration,
+            impacting: impactingDuration,
+            settling: settlingDuration,
+          },
         });
         document.body.append(output);
       })();

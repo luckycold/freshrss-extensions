@@ -186,9 +186,9 @@ body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-swipe-right:not(.acti
 	opacity: var(--cmc-indicator-opacity);
 }
 
-body:not(.reader) main#stream div.flux.cmc-dragging > .cmc-swipe-indicator,
-body:not(.reader) main#stream div.flux.cmc-dragging > .cmc-swipe-indicator .cmc-swipe-icon,
-body:not(.reader) main#stream div.flux.cmc-dragging > .cmc-swipe-indicator .cmc-swipe-label {
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-dragging:not(.active) > .cmc-swipe-indicator,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-dragging:not(.active) > .cmc-swipe-indicator .cmc-swipe-icon,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-dragging:not(.active) > .cmc-swipe-indicator .cmc-swipe-label {
 	transition: none;
 }
 
@@ -283,13 +283,31 @@ body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_head
 	pointer-events: none;
 }
 
-body:not(.reader) main#stream div.flux.cmc-dragging > .flux_header {
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-dragging:not(.active) > .flux_header {
 	transition: none;
 }
 
-body:not(.reader) main#stream div.flux.cmc-settling > .flux_header {
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-settling:not(.active) > .flux_header {
 	transition-duration: 280ms;
 	transition-timing-function: cubic-bezier(0.3, 0.8, 0.35, 1);
+}
+
+/* Committed swipes keep their remaining momentum into the drag limit, then snap back. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-impacting:not(.active) > .flux_header {
+	transition-duration: 90ms;
+	transition-timing-function: cubic-bezier(0.55, 0, 1, 1);
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-impacting:not(.active) > .cmc-swipe-indicator,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-impacting:not(.active) > .cmc-swipe-indicator .cmc-swipe-icon,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-impacting:not(.active) > .cmc-swipe-indicator .cmc-swipe-label {
+	transition-duration: 90ms;
+	transition-timing-function: cubic-bezier(0.55, 0, 1, 1);
+}
+
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-dragging:not(.active)::before,
+body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-dragging:not(.active)::after {
+	transition: none;
 }
 
 /* The thumbnail and the title share a grid cell, creating the image overlay. */

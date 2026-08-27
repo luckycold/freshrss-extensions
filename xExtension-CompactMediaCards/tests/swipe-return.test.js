@@ -127,7 +127,7 @@ test("letterboxed YouTube hqdefault thumbnails upgrade to a verified 16:9 source
   dom.window.close();
 });
 
-test("a committed swipe returns toward the card starting position instead of leaving the screen", () => {
+test("a committed swipe drives to the drag limit before snapping back", async () => {
   const { dom, window, card } = createPage();
   const target = card.querySelector(".title");
 
@@ -136,12 +136,56 @@ test("a committed swipe returns toward the card starting position instead of lea
   assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-110px");
   target.dispatchEvent(pointerEvent(window, "pointerup", 130));
 
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-156px");
+  assert.ok(card.classList.contains("cmc-impacting"));
+  assert.ok(card.classList.contains("cmc-settling"));
+  assert.equal(card.style.getPropertyValue("--cmc-swipe-progress"), "1.000");
+
+  await new Promise((resolve) => window.setTimeout(resolve, 140));
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-156px");
+  assert.ok(card.classList.contains("cmc-impacting"));
+
+  await new Promise((resolve) => window.setTimeout(resolve, 30));
   assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "0px");
+  assert.equal(card.classList.contains("cmc-impacting"), false);
   assert.ok(card.classList.contains("cmc-settling"));
   dom.window.close();
 });
 
-test("a committed swipe uses a gentler 280ms snap-back", async () => {
+test("a committed right swipe also finishes at the drag limit before returning", () => {
+  const { dom, window, card } = createPage();
+  card.querySelector(".item.manage").insertAdjacentHTML(
+    "beforeend",
+    '<a class="bookmark" href="#favorite">Favorite</a>',
+  );
+  const target = card.querySelector(".title");
+
+  target.dispatchEvent(pointerEvent(window, "pointerdown", 40));
+  target.dispatchEvent(pointerEvent(window, "pointermove", 150));
+  target.dispatchEvent(pointerEvent(window, "pointerup", 150));
+
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "156px");
+  assert.ok(card.classList.contains("cmc-impacting"));
+  assert.ok(card.classList.contains("cmc-swipe-right"));
+  dom.window.close();
+});
+
+test("a cancelled swipe returns immediately without hitting the drag limit", () => {
+  const { dom, window, card } = createPage();
+  const target = card.querySelector(".title");
+
+  target.dispatchEvent(pointerEvent(window, "pointerdown", 240));
+  target.dispatchEvent(pointerEvent(window, "pointermove", 200));
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-40px");
+  target.dispatchEvent(pointerEvent(window, "pointerup", 200));
+
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "0px");
+  assert.equal(card.classList.contains("cmc-impacting"), false);
+  assert.ok(card.classList.contains("cmc-settling"));
+  dom.window.close();
+});
+
+test("a committed swipe uses a gentler 280ms snap-back after the impact", async () => {
   const { dom, window, card } = createPage();
   const target = card.querySelector(".title");
   const readAction = card.querySelector("a.read");
@@ -155,13 +199,21 @@ test("a committed swipe uses a gentler 280ms snap-back", async () => {
   target.dispatchEvent(pointerEvent(window, "pointermove", 130));
   target.dispatchEvent(pointerEvent(window, "pointerup", 130));
 
-  await new Promise((resolve) => window.setTimeout(resolve, 240));
-  assert.equal(actionCount, 0, "action should wait for the slower snap-back");
-  await new Promise((resolve) => window.setTimeout(resolve, 80));
+  await new Promise((resolve) => window.setTimeout(resolve, 400));
+  assert.equal(actionCount, 0, "action should wait for the impact and snap-back");
+  await new Promise((resolve) => window.setTimeout(resolve, 50));
   assert.equal(actionCount, 1);
   assert.match(
     stylesheet,
-    /\.cmc-settling\s*>\s*\.flux_header\s*\{[^}]*transition-duration:\s*280ms;/s,
+    /\.cmc-swipe-ready\.cmc-settling:not\(\.active\)\s*>\s*\.flux_header\s*\{[^}]*transition-duration:\s*280ms;/s,
+  );
+  assert.match(
+    stylesheet,
+    /\.cmc-swipe-ready\.cmc-impacting:not\(\.active\)\s*>\s*\.flux_header\s*\{[^}]*transition-duration:\s*90ms;/s,
+  );
+  assert.match(
+    stylesheet,
+    /\.cmc-swipe-ready\.cmc-dragging:not\(\.active\)\s*>\s*\.flux_header\s*\{[^}]*transition:\s*none;/s,
   );
   dom.window.close();
 });
@@ -231,6 +283,14 @@ function renderCardFixture(width, height = 800) {
 
 test("image cards hug their media height and top-corner controls reveal the image", () => {
   const layout = renderCardFixture(1280);
+
+  assert.equal(
+    layout.swipeTimings.dragging,
+    "0s",
+    "finger tracking must not lag behind a 180ms card transition",
+  );
+  assert.equal(layout.swipeTimings.impacting, "0.09s");
+  assert.equal(layout.swipeTimings.settling, "0.28s");
 
   assert.ok(
     Math.abs(layout.imageCard.height - layout.imageHeader.height) <= 1,
