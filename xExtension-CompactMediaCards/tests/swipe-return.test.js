@@ -68,6 +68,9 @@ function createPage(options = {}) {
     naturalHeight: { value: 1200, configurable: true },
   });
   card.getBoundingClientRect = () => ({ width: 300 });
+  if (typeof options.cardWidth === "number") {
+    card.getBoundingClientRect = () => ({ width: options.cardWidth });
+  }
   if (typeof options.setupWindow === "function") {
     options.setupWindow(window);
   }
@@ -133,11 +136,97 @@ test("a committed swipe returns toward the card starting position instead of lea
 
   target.dispatchEvent(pointerEvent(window, "pointerdown", 240));
   target.dispatchEvent(pointerEvent(window, "pointermove", 130));
-  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-110px");
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-64px");
   target.dispatchEvent(pointerEvent(window, "pointerup", 130));
 
   assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "0px");
   assert.ok(card.classList.contains("cmc-settling"));
+  dom.window.close();
+});
+
+test("max swipe travel matches a FeedMe-sized icon gutter", () => {
+  const { dom, window, card } = createPage();
+  const target = card.querySelector(".title");
+
+  target.dispatchEvent(pointerEvent(window, "pointerdown", 220));
+  target.dispatchEvent(pointerEvent(window, "pointermove", 20));
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-64px");
+  assert.equal(card.style.getPropertyValue("--cmc-reveal-width"), "64px");
+
+  target.dispatchEvent(pointerEvent(window, "pointerup", 20));
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "0px");
+  assert.ok(card.classList.contains("cmc-settling"));
+  assert.match(
+    stylesheet,
+    /cmc-swipe-indicator-right\s*\{[^}]*left:\s*calc\(var\(--cmc-reveal-width\)\s*\/\s*2\);/s,
+  );
+  assert.match(
+    stylesheet,
+    /cmc-swipe-indicator-left\s*\{[^}]*right:\s*calc\(var\(--cmc-reveal-width\)\s*\/\s*2\);/s,
+  );
+  dom.window.close();
+});
+
+test("phone-width cards cap swipe travel at about 18% of the card", () => {
+  const { dom, window, card } = createPage({ cardWidth: 390 });
+  const target = card.querySelector(".title");
+
+  target.dispatchEvent(pointerEvent(window, "pointerdown", 300));
+  target.dispatchEvent(pointerEvent(window, "pointermove", 20));
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-70px");
+  assert.equal(card.style.getPropertyValue("--cmc-reveal-width"), "70px");
+  target.dispatchEvent(pointerEvent(window, "pointerup", 20));
+  dom.window.close();
+});
+
+test("wide cards still stop after one icon gutter instead of a long drag", () => {
+  const { dom, window, card } = createPage({ cardWidth: 800 });
+  const target = card.querySelector(".title");
+
+  target.dispatchEvent(pointerEvent(window, "pointerdown", 400));
+  target.dispatchEvent(pointerEvent(window, "pointermove", 20));
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-80px");
+  target.dispatchEvent(pointerEvent(window, "pointerup", 20));
+  dom.window.close();
+});
+
+test("a FeedMe-length swipe is enough to commit the action", async () => {
+  const { dom, window, card } = createPage();
+  const target = card.querySelector(".title");
+  const readAction = card.querySelector("a.read");
+  let actionCount = 0;
+  readAction.addEventListener("click", (event) => {
+    event.preventDefault();
+    actionCount += 1;
+  });
+
+  target.dispatchEvent(pointerEvent(window, "pointerdown", 240));
+  target.dispatchEvent(pointerEvent(window, "pointermove", 184));
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-56px");
+  target.dispatchEvent(pointerEvent(window, "pointerup", 184));
+
+  await new Promise((resolve) => window.setTimeout(resolve, 360));
+  assert.equal(actionCount, 1);
+  dom.window.close();
+});
+
+test("a short swipe below the compact threshold snaps back without committing", async () => {
+  const { dom, window, card } = createPage();
+  const target = card.querySelector(".title");
+  const readAction = card.querySelector("a.read");
+  let actionCount = 0;
+  readAction.addEventListener("click", (event) => {
+    event.preventDefault();
+    actionCount += 1;
+  });
+
+  target.dispatchEvent(pointerEvent(window, "pointerdown", 240));
+  target.dispatchEvent(pointerEvent(window, "pointermove", 212));
+  assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-28px");
+  target.dispatchEvent(pointerEvent(window, "pointerup", 212));
+
+  await new Promise((resolve) => window.setTimeout(resolve, 360));
+  assert.equal(actionCount, 0);
   dom.window.close();
 });
 
@@ -448,6 +537,10 @@ test("swipe action icons remain plain glyphs without circular surfaces", () => {
   assert.match(
     stylesheet,
     /\.cmc-swipe-indicator \.cmc-swipe-icon\s*\{[^}]*border:\s*0\s*!important;[^}]*background:\s*transparent\s*!important;[^}]*box-shadow:\s*none\s*!important;[^}]*backdrop-filter:\s*none\s*!important;/s,
+  );
+  assert.match(
+    stylesheet,
+    /\.cmc-swipe-indicator \.cmc-swipe-label\s*\{[^}]*display:\s*none;/s,
   );
 });
 

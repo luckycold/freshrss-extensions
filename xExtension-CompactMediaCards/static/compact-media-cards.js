@@ -49,11 +49,13 @@
 			label: function () { return 'Disabled'; },
 		},
 	});
-	const DRAG_LIMIT = 156;
+	const DRAG_RATIO = 0.18;
+	const DRAG_MIN = 64;
+	const DRAG_MAX = 80;
 	const AXIS_SLOP = 9;
-	const COMMIT_MIN = 68;
-	const COMMIT_MAX = 108;
-	const COMMIT_RATIO = 0.22;
+	const COMMIT_MIN = 44;
+	const COMMIT_MAX = 64;
+	const COMMIT_RATIO = 0.14;
 	const FAVORITE_PENDING_TIMEOUT = 5000;
 	const SNAP_BACK_DURATION = 280;
 	const SETTLE_RESET_DELAY = 440;
@@ -132,6 +134,18 @@
 
 	function clamp01(value) {
 		return Math.max(0, Math.min(1, value));
+	}
+
+	function cardWidth(card) {
+		return card.getBoundingClientRect().width;
+	}
+
+	function dragLimitFor(card) {
+		return Math.round(Math.min(DRAG_MAX, Math.max(DRAG_MIN, cardWidth(card) * DRAG_RATIO)));
+	}
+
+	function commitThresholdFor(card) {
+		return Math.round(Math.min(COMMIT_MAX, Math.max(COMMIT_MIN, cardWidth(card) * COMMIT_RATIO)));
 	}
 
 	function setIndicatorProgress(card, progress, direction) {
@@ -441,6 +455,7 @@
 	function resetCard(card) {
 		card.classList.remove('cmc-dragging', 'cmc-settling', 'cmc-swipe-left', 'cmc-swipe-right');
 		card.style.removeProperty('--cmc-drag-x');
+		card.style.removeProperty('--cmc-reveal-width');
 		card.style.removeProperty('--cmc-swipe-progress');
 		card.style.removeProperty('--cmc-indicator-opacity');
 		card.style.removeProperty('--cmc-indicator-offset');
@@ -510,13 +525,15 @@
 		const direction = dx < 0 ? 'left' : 'right';
 		const action = resolveAction(gesture.card, direction);
 		const hasAction = action.id !== 'none' && Boolean(action.target);
-		gesture.dx = Math.max(-DRAG_LIMIT, Math.min(DRAG_LIMIT, hasAction ? dx : dx * 0.2));
-		const threshold = Math.min(COMMIT_MAX, Math.max(COMMIT_MIN, gesture.card.getBoundingClientRect().width * COMMIT_RATIO));
+		const limit = dragLimitFor(gesture.card);
+		gesture.dx = Math.max(-limit, Math.min(limit, hasAction ? dx : dx * 0.2));
+		const threshold = commitThresholdFor(gesture.card);
 		const progress = Math.min(1, Math.abs(gesture.dx) / threshold);
 		gesture.card.classList.add('cmc-dragging');
 		gesture.card.classList.toggle('cmc-swipe-left', gesture.dx < 0);
 		gesture.card.classList.toggle('cmc-swipe-right', gesture.dx > 0);
 		gesture.card.style.setProperty('--cmc-drag-x', gesture.dx + 'px');
+		gesture.card.style.setProperty('--cmc-reveal-width', Math.abs(gesture.dx) + 'px');
 		setIndicatorProgress(gesture.card, progress, direction);
 		try {
 			gesture.card.setPointerCapture(event.pointerId);
@@ -560,6 +577,7 @@
 		card.classList.remove('cmc-dragging');
 		card.classList.add('cmc-settling');
 		card.style.setProperty('--cmc-drag-x', '0px');
+		card.style.setProperty('--cmc-reveal-width', '0px');
 		setIndicatorProgress(card, 0, direction);
 		suppressedCard = card;
 		suppressClickUntil = Date.now() + 450;
@@ -588,13 +606,14 @@
 
 		const direction = gesture.dx < 0 ? 'left' : 'right';
 		const action = resolveAction(gesture.card, direction);
-		const threshold = Math.min(COMMIT_MAX, Math.max(COMMIT_MIN, gesture.card.getBoundingClientRect().width * COMMIT_RATIO));
+		const threshold = commitThresholdFor(gesture.card);
 		if (action.id !== 'none' && action.target && Math.abs(gesture.dx) >= threshold) {
 			commitGesture(gesture, direction, action);
 		} else {
 			gesture.card.classList.remove('cmc-dragging');
 			gesture.card.classList.add('cmc-settling');
 			gesture.card.style.setProperty('--cmc-drag-x', '0px');
+			gesture.card.style.setProperty('--cmc-reveal-width', '0px');
 			setIndicatorProgress(gesture.card, 0, direction);
 			window.setTimeout(function () { resetCard(gesture.card); }, 220);
 		}

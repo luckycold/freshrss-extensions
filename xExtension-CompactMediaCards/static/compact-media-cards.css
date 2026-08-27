@@ -89,6 +89,7 @@ body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_
 /* Keep the extension inert in FreshRSS reader mode and on an expanded entry. */
 body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) {
 	--cmc-drag-x: 0px;
+	--cmc-reveal-width: 0px;
 	--cmc-swipe-progress: 0;
 	--cmc-indicator-opacity: 0;
 	--cmc-indicator-offset: 34px;
@@ -174,11 +175,13 @@ body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .cmc-swipe
 }
 
 body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .cmc-swipe-indicator-left {
-	right: 20px;
+	right: calc(var(--cmc-reveal-width) / 2);
+	transform: translate(50%, calc(-50% + var(--cmc-indicator-offset)));
 }
 
 body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .cmc-swipe-indicator-right {
-	left: 20px;
+	left: calc(var(--cmc-reveal-width) / 2);
+	transform: translate(-50%, calc(-50% + var(--cmc-indicator-offset)));
 }
 
 body:not(.reader) main#stream div.flux.cmc-swipe-ready.cmc-swipe-left:not(.active) > .cmc-swipe-indicator-left,
@@ -217,9 +220,7 @@ body:not(.reader) main#stream div.flux.cmc-dragging > .cmc-swipe-indicator .cmc-
 }
 
 .cmc-swipe-indicator .cmc-swipe-label {
-	opacity: var(--cmc-label-opacity);
-	transform: translateY(var(--cmc-label-offset));
-	transition: opacity 140ms ease-out, transform 180ms ease-out;
+	display: none;
 }
 
 /* Show the intended favorite state immediately while FreshRSS saves it. */
