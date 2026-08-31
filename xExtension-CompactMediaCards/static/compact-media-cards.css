@@ -7,11 +7,14 @@
 	--cmc-card-control-surface: rgb(0 0 0 / 32%);
 	--cmc-card-control-surface-hover: rgb(0 0 0 / 48%);
 	--cmc-card-control-border: rgb(255 255 255 / 12%);
+	--cmc-list-card-max-width: 48rem;
 }
 
 /* Match YouLag's category toolbar to the compact card language. */
 body.youlag-active:not(.reader) main#stream > #yl_category_toolbar {
 	box-sizing: border-box;
+	grid-column: 1 / -1;
+	min-width: 0;
 	margin: 0 !important;
 	padding: 6px 8px !important;
 	border: 1px solid rgb(255 255 255 / 6%);
@@ -20,17 +23,57 @@ body.youlag-active:not(.reader) main#stream > #yl_category_toolbar {
 	box-shadow: 0 1px 0 rgb(255 255 255 / 5%), 0 7px 18px rgb(0 0 0 / 16%);
 }
 
+body.youlag-active:not(.reader) main#stream > #stream-footer,
+body.youlag-active:not(.reader) main#stream > form {
+	grid-column: 1 / -1;
+	min-width: 0;
+}
+
 /* Compact mixed-height cards without changing FreshRSS's DOM/source order. */
 body.youlag-active:not(.reader) main#stream.cmc-masonry-active {
+	display: grid;
 	grid-auto-flow: row dense;
 	grid-auto-rows: 1px;
 	align-items: start;
 }
 
+/* Linear list: the same compact cards, one column, source order preserved. */
+body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream,
+body.youlag-active.cmc-layout-list:not(.reader) main#stream {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) !important;
+	grid-auto-flow: row !important;
+	grid-auto-rows: auto !important;
+	align-items: start;
+	justify-items: center;
+	gap: 14px !important;
+	padding: 12px !important;
+}
+
+body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > .flux,
+body.youlag-active.cmc-layout-list:not(.reader) main#stream > .flux {
+	width: 100% !important;
+	max-width: min(100%, var(--cmc-list-card-max-width)) !important;
+	justify-self: center;
+}
+
+body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > #yl_category_toolbar,
+body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > #stream-footer,
+body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > form,
+body.youlag-active.cmc-layout-list:not(.reader) main#stream > #yl_category_toolbar,
+body.youlag-active.cmc-layout-list:not(.reader) main#stream > #stream-footer,
+body.youlag-active.cmc-layout-list:not(.reader) main#stream > form {
+	width: 100% !important;
+	max-width: none !important;
+	justify-self: stretch;
+}
+
 body.youlag-active:not(.reader) main#stream > #yl_category_toolbar > #yl_category_title_container {
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
 	width: 100%;
+	min-width: 0;
 	min-height: 40px;
 	gap: 8px;
 }
@@ -59,6 +102,58 @@ body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_stream_ca
 	line-height: 1.15;
 }
 
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle {
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: stretch;
+	min-height: 38px;
+	margin: 0;
+	padding: 0;
+	border: 1px solid rgb(255 255 255 / 9%);
+	border-radius: 999px;
+	background: rgb(255 255 255 / 4%);
+	overflow: hidden;
+}
+
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	min-width: 38px;
+	margin: 0;
+	padding: 7px 12px;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: var(--cmc-text);
+	font-size: 0.84rem;
+	font-weight: 650;
+	line-height: 1.15;
+	cursor: pointer;
+}
+
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button[aria-pressed="true"] {
+	background: rgb(255 255 255 / 12%);
+}
+
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button:hover,
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button:focus-visible {
+	background: rgb(255 255 255 / 9%);
+}
+
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button[aria-pressed="true"]:hover,
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button[aria-pressed="true"]:focus-visible {
+	background: rgb(255 255 255 / 16%);
+}
+
+body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle svg {
+	display: block;
+	width: 16px;
+	height: 16px;
+	fill: currentColor;
+}
+
 body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_container_toggle:hover,
 body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_container_toggle:focus-visible,
 body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_manage_current_feed:hover,
@@ -84,20 +179,27 @@ body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_
 		padding: 6px 10px;
 		font-size: 0.84rem;
 	}
+
+	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle {
+		min-height: 36px;
+	}
+
+	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button {
+		min-height: 36px;
+		padding: 6px 10px;
+	}
+
+	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle .cmc-layout-label {
+		display: none;
+	}
 }
 
 /* Keep the extension inert in FreshRSS reader mode and on an expanded entry. */
 body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) {
 	--cmc-drag-x: 0px;
-	--cmc-reveal-width: 0px;
 	--cmc-swipe-progress: 0;
 	--cmc-indicator-opacity: 0;
 	--cmc-indicator-offset: 34px;
-	--cmc-indicator-scale: 0.38;
-	--cmc-indicator-blur: 3.5px;
-	--cmc-indicator-tilt: 0deg;
-	--cmc-label-opacity: 0;
-	--cmc-label-offset: 8px;
 	--cmc-left-action-color: #24764c;
 	--cmc-left-action-dark: #17472f;
 	--cmc-right-action-color: #9b641a;
@@ -106,6 +208,7 @@ body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) {
 	display: block !important;
 	align-self: start !important;
 	height: fit-content !important;
+	min-width: 0 !important;
 	min-height: 0 !important;
 	margin-bottom: 0 !important;
 	border: 0 !important;
@@ -166,21 +269,19 @@ body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .cmc-swipe
 	letter-spacing: 0.015em;
 	opacity: 0;
 	transform: translateY(calc(-50% + var(--cmc-indicator-offset)));
-	filter: blur(var(--cmc-indicator-blur));
 	transition:
 		opacity 160ms ease-out,
-		transform 210ms cubic-bezier(0.16, 0.9, 0.25, 1),
-		filter 160ms ease-out;
+		transform 210ms cubic-bezier(0.16, 0.9, 0.25, 1);
 	pointer-events: none;
 }
 
 body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .cmc-swipe-indicator-left {
-	right: calc(var(--cmc-reveal-width) / 2);
+	right: 32px;
 	transform: translate(50%, calc(-50% + var(--cmc-indicator-offset)));
 }
 
 body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .cmc-swipe-indicator-right {
-	left: calc(var(--cmc-reveal-width) / 2);
+	left: 32px;
 	transform: translate(-50%, calc(-50% + var(--cmc-indicator-offset)));
 }
 
@@ -207,9 +308,6 @@ body:not(.reader) main#stream div.flux.cmc-dragging > .cmc-swipe-indicator .cmc-
 	box-shadow: none !important;
 	font-size: 1.45rem;
 	backdrop-filter: none !important;
-	transform: scale(var(--cmc-indicator-scale)) rotate(var(--cmc-indicator-tilt));
-	transform-origin: 50% 100%;
-	transition: transform 220ms cubic-bezier(0.16, 1.25, 0.3, 1);
 }
 
 .cmc-swipe-indicator .cmc-swipe-icon img {
@@ -812,6 +910,16 @@ body:not(.reader) main#stream div.flux.favorite.cmc-swipe-ready:not(.active) {
 	body.youlag-active.youlag-mobile-layout--grid:not(.reader) main#stream {
 		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 		gap: 4px !important;
+	}
+
+	body.youlag-active.cmc-layout-list:not(.reader) main#stream,
+	body.youlag-active.cmc-layout-list.youlag-mobile-layout--grid:not(.reader) main#stream,
+	body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream,
+	body.youlag-active.youlag-mobile-layout--grid:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream {
+		display: grid !important;
+		grid-template-columns: minmax(0, 1fr) !important;
+		gap: 18px !important;
+		padding: 12px !important;
 	}
 }
 

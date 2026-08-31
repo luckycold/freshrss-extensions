@@ -81,9 +81,9 @@ function createPage(options = {}) {
   return { dom, window, card };
 }
 
-test("release metadata identifies Compact Media Cards 1.0.1", () => {
+test("release metadata identifies Compact Media Cards 1.1.0", () => {
   assert.equal(metadata.name, "Compact Media Cards");
-  assert.equal(metadata.version, "1.0.1");
+  assert.equal(metadata.version, "1.1.0");
   assert.equal(metadata.entrypoint, "CompactMediaCards");
 });
 
@@ -144,25 +144,100 @@ test("a committed swipe returns toward the card starting position instead of lea
   dom.window.close();
 });
 
-test("max swipe travel matches a FeedMe-sized icon gutter", () => {
+test("swipe indicator stays horizontally fixed while fading upward", () => {
   const { dom, window, card } = createPage();
   const target = card.querySelector(".title");
 
   target.dispatchEvent(pointerEvent(window, "pointerdown", 220));
   target.dispatchEvent(pointerEvent(window, "pointermove", 20));
   assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-64px");
-  assert.equal(card.style.getPropertyValue("--cmc-reveal-width"), "64px");
 
   target.dispatchEvent(pointerEvent(window, "pointerup", 20));
   assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "0px");
   assert.ok(card.classList.contains("cmc-settling"));
   assert.match(
     stylesheet,
-    /cmc-swipe-indicator-right\s*\{[^}]*left:\s*calc\(var\(--cmc-reveal-width\)\s*\/\s*2\);/s,
+    /cmc-swipe-indicator-right\s*\{[^}]*left:\s*32px;[^}]*translate\(-50%,\s*calc\(-50%\s*\+\s*var\(--cmc-indicator-offset\)\)\);/s,
   );
   assert.match(
     stylesheet,
-    /cmc-swipe-indicator-left\s*\{[^}]*right:\s*calc\(var\(--cmc-reveal-width\)\s*\/\s*2\);/s,
+    /cmc-swipe-indicator-left\s*\{[^}]*right:\s*32px;[^}]*translate\(50%,\s*calc\(-50%\s*\+\s*var\(--cmc-indicator-offset\)\)\);/s,
+  );
+  assert.doesNotMatch(stylesheet, /cmc-swipe-indicator-(?:left|right)\s*\{[^}]*cmc-reveal-width/s);
+  assert.doesNotMatch(script, /--cmc-indicator-(?:scale|blur|tilt)/);
+  assert.doesNotMatch(stylesheet, /\.cmc-swipe-indicator \.cmc-swipe-icon\s*\{[^}]*transform:/s);
+  dom.window.close();
+});
+
+test("toolbar switches between masonry and single-column card views and persists the choice", async () => {
+  const dom = new JSDOM(
+    `<!doctype html><html><body class="youlag-active">
+      <div id="cmc_layout" hidden data-cmc-layout="masonry"></div>
+      <main id="stream">
+        <div id="yl_category_toolbar"><div id="yl_category_title_container">
+          <strong id="yl_category_title">All feeds</strong>
+          <button id="yl_nav_menu_container_toggle" type="button">Menu</button>
+        </div></div>
+        <div class="flux not_read" data-id="42"><div class="flux_header">
+          <div class="item thumbnail"><img src="https://example.test/image.jpg"></div>
+          <div class="item titleAuthorSummaryDate"><a class="title" href="https://example.test/article">Article</a></div>
+          <div class="item manage"><a class="read" href="#read">Read</a></div>
+        </div></div>
+      </main>
+    </body></html>`,
+    { runScripts: "outside-only", url: "https://rss.example.test/i/" },
+  );
+  const { window } = dom;
+  const requests = [];
+  window.context = {
+    csrf: "test-csrf",
+    extensions: {
+      compactMediaCards: {
+        leftAction: "read",
+        rightAction: "favorite",
+        layout: "masonry",
+        configureUrl: "https://rss.example.test/i/?c=extension&a=configure&e=Compact%20Media%20Cards",
+      },
+    },
+  };
+  window.fetch = (url, options) => {
+    requests.push({ url, options });
+    return Promise.resolve({ ok: true });
+  };
+  const image = window.document.querySelector(".thumbnail img");
+  Object.defineProperties(image, {
+    complete: { value: true, configurable: true },
+    naturalWidth: { value: 1200, configurable: true },
+    naturalHeight: { value: 800, configurable: true },
+  });
+
+  window.eval(script);
+  window.document.dispatchEvent(new window.Event("DOMContentLoaded", { bubbles: true }));
+  await new Promise((resolve) => window.setTimeout(resolve, 10));
+
+  const gridButton = window.document.querySelector('[data-cmc-layout-option="masonry"]');
+  const listButton = window.document.querySelector('[data-cmc-layout-option="list"]');
+  assert.ok(gridButton, "masonry toolbar button was not created");
+  assert.ok(listButton, "single-column toolbar button was not created");
+  assert.equal(gridButton.getAttribute("aria-pressed"), "true");
+  assert.equal(listButton.getAttribute("aria-pressed"), "false");
+
+  listButton.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true }));
+  assert.equal(window.document.body.classList.contains("cmc-layout-list"), true);
+  assert.equal(window.document.body.classList.contains("cmc-layout-masonry"), false);
+  assert.equal(window.document.querySelector("#stream").classList.contains("cmc-masonry-active"), false);
+  assert.equal(listButton.getAttribute("aria-pressed"), "true");
+  assert.equal(window.document.querySelector("#cmc_layout").dataset.cmcLayout, "list");
+
+  await new Promise((resolve) => window.setTimeout(resolve, 150));
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].url, window.context.extensions.compactMediaCards.configureUrl);
+  const persisted = new URLSearchParams(requests[0].options.body);
+  assert.equal(persisted.get("cmc_layout"), "list");
+  assert.equal(persisted.get("_csrf"), "test-csrf");
+  assert.match(
+    stylesheet,
+    /cmc-layout-list[^}]*main#stream\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s*!important;/s,
   );
   dom.window.close();
 });
@@ -174,7 +249,6 @@ test("phone-width cards cap swipe travel at about 18% of the card", () => {
   target.dispatchEvent(pointerEvent(window, "pointerdown", 300));
   target.dispatchEvent(pointerEvent(window, "pointermove", 20));
   assert.equal(card.style.getPropertyValue("--cmc-drag-x"), "-70px");
-  assert.equal(card.style.getPropertyValue("--cmc-reveal-width"), "70px");
   target.dispatchEvent(pointerEvent(window, "pointerup", 20));
   dom.window.close();
 });

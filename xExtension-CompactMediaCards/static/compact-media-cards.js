@@ -60,6 +60,10 @@
 	const SNAP_BACK_DURATION = 280;
 	const SETTLE_RESET_DELAY = 440;
 	const MASONRY_ROW_HEIGHT = 1;
+	const LAYOUT_ICONS = Object.freeze({
+		masonry: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1"/><rect x="9" y="9" width="5.5" height="5.5" rx="1"/></svg>',
+		list: '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="1.5" y="1.5" width="13" height="3.5" rx="1"/><rect x="1.5" y="6.25" width="13" height="3.5" rx="1"/><rect x="1.5" y="11" width="13" height="3.5" rx="1"/></svg>',
+	});
 	let activeGesture = null;
 	let suppressedCard = null;
 	let suppressClickUntil = 0;
@@ -67,10 +71,145 @@
 	let masonryResizeObserver = null;
 	let masonryLayoutRunning = false;
 	let desktopControlsMedia = null;
+	let persistLayoutTimer = 0;
 
 	function selectedActionId(direction) {
 		const configured = window.context?.extensions?.compactMediaCards?.[direction + 'Action'];
 		return Object.hasOwn(ACTIONS, configured) ? configured : DEFAULT_ACTIONS[direction];
+	}
+
+	function currentLayout() {
+		const configured = window.context?.extensions?.compactMediaCards?.layout;
+		return configured === 'list' ? 'list' : 'masonry';
+	}
+
+	function layoutConfig() {
+		if (!window.context) {
+			window.context = {};
+		}
+		if (!window.context.extensions) {
+			window.context.extensions = {};
+		}
+		if (!window.context.extensions.compactMediaCards) {
+			window.context.extensions.compactMediaCards = {};
+		}
+		return window.context.extensions.compactMediaCards;
+	}
+
+	function applyLayoutClass(layout = currentLayout()) {
+		const resolved = layout === 'list' ? 'list' : 'masonry';
+		if (document.body) {
+			document.body.classList.toggle('cmc-layout-list', resolved === 'list');
+			document.body.classList.toggle('cmc-layout-masonry', resolved === 'masonry');
+		}
+		const marker = document.getElementById('cmc_layout');
+		if (marker) {
+			marker.dataset.cmcLayout = resolved;
+		}
+		return resolved;
+	}
+
+	function syncLayoutToggle(layout = currentLayout()) {
+		document.querySelectorAll('[data-cmc-layout-option]').forEach(function (button) {
+			const selected = button.getAttribute('data-cmc-layout-option') === layout;
+			button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+			button.classList.toggle('is-active', selected);
+		});
+	}
+
+	function persistLayout(layout) {
+		window.clearTimeout(persistLayoutTimer);
+		persistLayoutTimer = window.setTimeout(function () {
+			const config = layoutConfig();
+			const csrf = window.context?.csrf
+				|| document.querySelector('#post-csrf input[name="_csrf"]')?.value;
+			const url = config.configureUrl;
+			if (!csrf || !url || typeof window.fetch !== 'function') {
+				return;
+			}
+			const body = new URLSearchParams({
+				_csrf: csrf,
+				cmc_layout: layout,
+				cmc_swipe_left_action: selectedActionId('left'),
+				cmc_swipe_right_action: selectedActionId('right'),
+			});
+			window.fetch(url, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: body,
+				credentials: 'same-origin',
+				redirect: 'manual',
+			}).catch(function () {
+				// Layout is already applied locally; a later reload uses the last saved server value.
+			});
+		}, 120);
+	}
+
+	function setLayout(layout) {
+		const resolved = layout === 'list' ? 'list' : 'masonry';
+		layoutConfig().layout = resolved;
+		applyLayoutClass(resolved);
+		syncLayoutToggle(resolved);
+		const stream = document.querySelector('main#stream');
+		if (resolved === 'list' && stream) {
+			disableMasonryLayout(stream);
+		} else {
+			scheduleMasonryLayout();
+		}
+		persistLayout(resolved);
+		return resolved;
+	}
+
+	function createLayoutButton(layout, label) {
+		const button = document.createElement('button');
+		button.type = 'button';
+		button.setAttribute('data-cmc-layout-option', layout);
+		button.setAttribute('title', label);
+		button.setAttribute('aria-label', label);
+		button.setAttribute('aria-pressed', currentLayout() === layout ? 'true' : 'false');
+		button.innerHTML = LAYOUT_ICONS[layout]
+			+ '<span class="cmc-layout-label">' + (layout === 'list' ? 'List' : 'Grid') + '</span>';
+		return button;
+	}
+
+	function ensureLayoutToggle() {
+		const container = document.querySelector('#yl_category_title_container');
+		if (!container) {
+			return;
+		}
+		let group = container.querySelector('.cmc-layout-toggle');
+		if (!group) {
+			group = document.createElement('div');
+			group.className = 'cmc-layout-toggle';
+			group.setAttribute('role', 'group');
+			group.setAttribute('aria-label', 'Card layout');
+			group.append(
+				createLayoutButton('masonry', 'Masonry grid'),
+				createLayoutButton('list', 'Linear list'),
+			);
+			const configure = container.querySelector('#yl_nav_menu_container_toggle');
+			if (configure) {
+				configure.before(group);
+			} else {
+				container.append(group);
+			}
+		}
+		syncLayoutToggle();
+	}
+
+	function onLayoutControlEvent(event) {
+		const target = event.target;
+		if (!(target instanceof Element)) {
+			return;
+		}
+		const button = target.closest('[data-cmc-layout-option]');
+		if (!button || !button.closest('.cmc-layout-toggle')) {
+			return;
+		}
+		event.preventDefault();
+		event.stopPropagation();
+		event.stopImmediatePropagation();
+		setLayout(button.getAttribute('data-cmc-layout-option'));
 	}
 
 	function resolveAction(card, direction) {
@@ -148,32 +287,15 @@
 		return Math.round(Math.min(COMMIT_MAX, Math.max(COMMIT_MIN, cardWidth(card) * COMMIT_RATIO)));
 	}
 
-	function setIndicatorProgress(card, progress, direction) {
+	function setIndicatorProgress(card, progress) {
 		const normalized = clamp01(progress);
 		const reveal = clamp01((normalized - 0.04) / 0.96);
 		const rise = 1 - Math.pow(1 - reveal, 3);
 		const opacity = clamp01(reveal * 1.12);
-		let scale;
-		if (reveal < 0.78) {
-			const popProgress = reveal / 0.78;
-			const popEase = 1 - Math.pow(1 - popProgress, 3);
-			scale = 0.38 + popEase * 0.72;
-		} else {
-			const settleProgress = (reveal - 0.78) / 0.22;
-			const settleEase = 1 - Math.pow(1 - settleProgress, 2);
-			scale = 1.10 - settleEase * 0.10;
-		}
-		const labelReveal = clamp01((reveal - 0.28) / 0.72);
-		const directionSign = direction === 'left' ? -1 : 1;
 
 		card.style.setProperty('--cmc-swipe-progress', normalized.toFixed(3));
 		card.style.setProperty('--cmc-indicator-opacity', opacity.toFixed(3));
 		card.style.setProperty('--cmc-indicator-offset', (34 * (1 - rise)).toFixed(2) + 'px');
-		card.style.setProperty('--cmc-indicator-scale', scale.toFixed(3));
-		card.style.setProperty('--cmc-indicator-blur', (3.5 * (1 - rise)).toFixed(2) + 'px');
-		card.style.setProperty('--cmc-indicator-tilt', (directionSign * 6 * (1 - rise)).toFixed(2) + 'deg');
-		card.style.setProperty('--cmc-label-opacity', labelReveal.toFixed(3));
-		card.style.setProperty('--cmc-label-offset', (8 * (1 - labelReveal)).toFixed(2) + 'px');
 	}
 
 	function clearOptimisticFavorite(card) {
@@ -354,7 +476,8 @@
 	}
 
 	function masonryIsEligible(stream) {
-		return document.body.classList.contains('youlag-active')
+		return currentLayout() !== 'list'
+			&& document.body.classList.contains('youlag-active')
 			&& !document.body.classList.contains('reader')
 			&& !stream.classList.contains('reader')
 			&& !stream.querySelector(':scope > .flux.active')
@@ -455,15 +578,9 @@
 	function resetCard(card) {
 		card.classList.remove('cmc-dragging', 'cmc-settling', 'cmc-swipe-left', 'cmc-swipe-right');
 		card.style.removeProperty('--cmc-drag-x');
-		card.style.removeProperty('--cmc-reveal-width');
 		card.style.removeProperty('--cmc-swipe-progress');
 		card.style.removeProperty('--cmc-indicator-opacity');
 		card.style.removeProperty('--cmc-indicator-offset');
-		card.style.removeProperty('--cmc-indicator-scale');
-		card.style.removeProperty('--cmc-indicator-blur');
-		card.style.removeProperty('--cmc-indicator-tilt');
-		card.style.removeProperty('--cmc-label-opacity');
-		card.style.removeProperty('--cmc-label-offset');
 		updateActionPresentation(card);
 	}
 
@@ -533,8 +650,7 @@
 		gesture.card.classList.toggle('cmc-swipe-left', gesture.dx < 0);
 		gesture.card.classList.toggle('cmc-swipe-right', gesture.dx > 0);
 		gesture.card.style.setProperty('--cmc-drag-x', gesture.dx + 'px');
-		gesture.card.style.setProperty('--cmc-reveal-width', Math.abs(gesture.dx) + 'px');
-		setIndicatorProgress(gesture.card, progress, direction);
+		setIndicatorProgress(gesture.card, progress);
 		try {
 			gesture.card.setPointerCapture(event.pointerId);
 		} catch (_) {
@@ -577,8 +693,7 @@
 		card.classList.remove('cmc-dragging');
 		card.classList.add('cmc-settling');
 		card.style.setProperty('--cmc-drag-x', '0px');
-		card.style.setProperty('--cmc-reveal-width', '0px');
-		setIndicatorProgress(card, 0, direction);
+		setIndicatorProgress(card, 0);
 		suppressedCard = card;
 		suppressClickUntil = Date.now() + 450;
 
@@ -613,8 +728,7 @@
 			gesture.card.classList.remove('cmc-dragging');
 			gesture.card.classList.add('cmc-settling');
 			gesture.card.style.setProperty('--cmc-drag-x', '0px');
-			gesture.card.style.setProperty('--cmc-reveal-width', '0px');
-			setIndicatorProgress(gesture.card, 0, direction);
+			setIndicatorProgress(gesture.card, 0);
 			window.setTimeout(function () { resetCard(gesture.card); }, 220);
 		}
 		event.preventDefault();
@@ -645,6 +759,10 @@
 			return;
 		}
 		document.documentElement.dataset.compactMediaCards = 'active';
+		applyLayoutClass();
+		ensureLayoutToggle();
+		window.addEventListener('pointerdown', onLayoutControlEvent, true);
+		window.addEventListener('click', onLayoutControlEvent, true);
 		if (typeof window.matchMedia === 'function') {
 			desktopControlsMedia = window.matchMedia(DESKTOP_CONTROLS_QUERY);
 			syncDesktopControls(desktopControlsMedia);
@@ -666,6 +784,7 @@
 		document.addEventListener('touchend', isolateYoulagTouchGesture, { capture: true, passive: false });
 		document.addEventListener('freshrss:load-more', function (event) {
 			decorateCards(event.target instanceof Element ? event.target : document);
+			ensureLayoutToggle();
 			scheduleMasonryLayout();
 		});
 		window.addEventListener('resize', scheduleMasonryLayout);
@@ -686,6 +805,10 @@
 					}
 					record.addedNodes.forEach(function (node) {
 						if (node instanceof Element) {
+							if (node.id === 'yl_category_toolbar'
+								|| node.querySelector?.('#yl_category_title_container, #yl_category_toolbar')) {
+								ensureLayoutToggle();
+							}
 							if (node.matches(CARD_SELECTOR) || node.querySelector(CARD_SELECTOR)) {
 								decorateCards(node);
 								masonryStateChanged = true;

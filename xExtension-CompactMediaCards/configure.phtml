@@ -4,14 +4,31 @@ declare(strict_types=1);
 /** @var CompactMediaCardsExtension $this */
 
 $actions = CompactMediaCardsExtension::swipeActionOptions();
+$layouts = CompactMediaCardsExtension::layoutOptions();
 $leftAction = $this->getSwipeLeftAction();
 $rightAction = $this->getSwipeRightAction();
+$layout = $this->getLayout();
 ?>
 
 <h2>Compact Media Cards</h2>
 
 <form action="<?= _url('extension', 'configure', 'e', urlencode($this->getName())) ?>" method="post" data-auto-leave-validation="1">
 	<input type="hidden" name="_csrf" value="<?= FreshRSS_Auth::csrfToken() ?>" />
+
+	<div class="form-group">
+		<label class="group-name" for="cmc_layout">Card layout</label>
+		<div class="group-controls">
+			<select id="cmc_layout" name="cmc_layout">
+				<?php foreach ($layouts as $value => $label): ?>
+					<option value="<?= htmlspecialchars($value, ENT_QUOTES, 'UTF-8') ?>"<?= $layout === $value ? ' selected="selected"' : '' ?>><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></option>
+				<?php endforeach; ?>
+			</select>
+			<p class="help">
+				Masonry grid packs compact cards into columns. Linear list stacks the same cards in one column.
+				The Grid / List control in the Youlag toolbar switches this without leaving the feed.
+			</p>
+		</div>
+	</div>
 
 	<div class="form-group">
 		<label class="group-name" for="cmc_swipe_left_action">Swipe left <small>(drag right-to-left)</small></label>
@@ -41,7 +58,7 @@ $rightAction = $this->getSwipeRightAction();
 
 	<div class="form-group form-actions">
 		<div class="group-controls">
-			<button type="submit" class="btn btn-important">Save swipe actions</button>
+			<button type="submit" class="btn btn-important">Save</button>
 		</div>
 	</div>
 </form>
