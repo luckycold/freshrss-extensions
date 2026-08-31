@@ -12,9 +12,9 @@ Local FreshRSS extensions for a media-first reader: OLED-black surfaces, compact
 
 Image-first feed cards with compact metadata overlays and FeedMe-style swipe actions.
 
-- Natural, uncropped media and measured masonry
+- Natural, uncropped media with switchable masonry and single-column list layouts
 - Title, favorite, feed, and date layered over the thumbnail
-- Mobile swipe actions; desktop hover-only top-right controls plus a persistent bottom-left star
+- Mobile swipe actions with fixed-position fade-up indicators; desktop hover-only top-right controls plus a persistent bottom-left star
 
 ### OLED Black Overlay
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 final class CompactMediaCardsExtension extends Minz_Extension {
 	private const DEFAULT_LEFT_ACTION = 'karakeep';
 	private const DEFAULT_RIGHT_ACTION = 'favorite';
+	private const DEFAULT_LAYOUT = 'masonry';
 
 	/** @return array<string,string> */
 	public static function swipeActionOptions(): array {
@@ -15,6 +16,14 @@ final class CompactMediaCardsExtension extends Minz_Extension {
 			'reader' => 'Open in FreshRSS reader',
 			'website' => 'Open original website',
 			'none' => 'Disabled',
+		];
+	}
+
+	/** @return array<string,string> */
+	public static function layoutOptions(): array {
+		return [
+			'masonry' => 'Masonry grid',
+			'list' => 'Linear list',
 		];
 	}
 
@@ -30,6 +39,7 @@ final class CompactMediaCardsExtension extends Minz_Extension {
 			id: 'compact-media-cards',
 		);
 		$this->registerHook(Minz_HookType::JsVars, [$this, 'jsVars']);
+		$this->registerHook(Minz_HookType::NavEntries, [$this, 'layoutMarker'], 0);
 	}
 
 	public function getSwipeLeftAction(): string {
@@ -46,6 +56,10 @@ final class CompactMediaCardsExtension extends Minz_Extension {
 		);
 	}
 
+	public function getLayout(): string {
+		return $this->validatedLayout($this->getUserConfigurationString('layout'));
+	}
+
 	/**
 	 * @param array<string,mixed> $vars
 	 * @return array<string,mixed>
@@ -54,8 +68,19 @@ final class CompactMediaCardsExtension extends Minz_Extension {
 		$vars['compactMediaCards'] = [
 			'leftAction' => $this->getSwipeLeftAction(),
 			'rightAction' => $this->getSwipeRightAction(),
+			'layout' => $this->getLayout(),
+			'configureUrl' => Minz_Url::display([
+				'c' => 'extension',
+				'a' => 'configure',
+				'params' => ['e' => $this->getName()],
+			], 'php'),
 		];
 		return $vars;
+	}
+
+	public function layoutMarker(): string {
+		$layout = htmlspecialchars($this->getLayout(), ENT_QUOTES, 'UTF-8');
+		return '<div id="cmc_layout" hidden="hidden" data-cmc-layout="' . $layout . '"></div>';
 	}
 
 	#[\Override]
@@ -73,8 +98,10 @@ final class CompactMediaCardsExtension extends Minz_Extension {
 			Minz_Request::paramString('cmc_swipe_right_action'),
 			self::DEFAULT_RIGHT_ACTION,
 		);
+		$layout = $this->validatedLayout(Minz_Request::paramString('cmc_layout'));
 		$this->setUserConfigurationValue('swipe_left_action', $left);
 		$this->setUserConfigurationValue('swipe_right_action', $right);
+		$this->setUserConfigurationValue('layout', $layout);
 		FreshRSS_UserDAO::touch();
 	}
 
@@ -82,5 +109,11 @@ final class CompactMediaCardsExtension extends Minz_Extension {
 		return $action !== null && array_key_exists($action, self::swipeActionOptions())
 			? $action
 			: $fallback;
+	}
+
+	private function validatedLayout(?string $layout): string {
+		return $layout !== null && array_key_exists($layout, self::layoutOptions())
+			? $layout
+			: self::DEFAULT_LAYOUT;
 	}
 }
