@@ -761,7 +761,6 @@
 		document.documentElement.dataset.compactMediaCards = 'active';
 		applyLayoutClass();
 		ensureLayoutToggle();
-		window.addEventListener('pointerdown', onLayoutControlEvent, true);
 		window.addEventListener('click', onLayoutControlEvent, true);
 		if (typeof window.matchMedia === 'function') {
 			desktopControlsMedia = window.matchMedia(DESKTOP_CONTROLS_QUERY);
