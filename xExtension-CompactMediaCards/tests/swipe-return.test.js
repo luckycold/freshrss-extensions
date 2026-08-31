@@ -81,9 +81,9 @@ function createPage(options = {}) {
   return { dom, window, card };
 }
 
-test("release metadata identifies Compact Media Cards 1.1.0", () => {
+test("release metadata identifies Compact Media Cards 1.1.1", () => {
   assert.equal(metadata.name, "Compact Media Cards");
-  assert.equal(metadata.version, "1.1.0");
+  assert.equal(metadata.version, "1.1.1");
   assert.equal(metadata.entrypoint, "CompactMediaCards");
 });
 
@@ -221,6 +221,16 @@ test("toolbar switches between masonry and single-column card views and persists
   assert.ok(listButton, "single-column toolbar button was not created");
   assert.equal(gridButton.getAttribute("aria-pressed"), "true");
   assert.equal(listButton.getAttribute("aria-pressed"), "false");
+
+  listButton.dispatchEvent(new window.MouseEvent("pointerdown", { bubbles: true, cancelable: true }));
+  listButton.dispatchEvent(new window.MouseEvent("pointercancel", { bubbles: true, cancelable: true }));
+  assert.equal(
+    window.document.body.classList.contains("cmc-layout-masonry"),
+    true,
+    "starting or cancelling a touch gesture over the control must not change layout",
+  );
+  assert.equal(window.context.extensions.compactMediaCards.layout, "masonry");
+  assert.equal(requests.length, 0, "pointerdown must not persist a layout choice");
 
   listButton.dispatchEvent(new window.MouseEvent("click", { bubbles: true, cancelable: true }));
   assert.equal(window.document.body.classList.contains("cmc-layout-list"), true);
