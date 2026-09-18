@@ -2,7 +2,7 @@
   "name": "Entry Click Swap",
   "author": "luckycold",
   "description": "Open entry clicks on the original website and repurpose the link button for the inline reader.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "entrypoint": "EntryClickSwap",
   "type": "user"
 }

@@ -14,6 +14,7 @@ function fixture(url = 'https://publisher.test/story?a=1&b=2') {
  w.eval(source); w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
  return {w,calls,button:()=>w.document.querySelector('.ecs-share-button'),close:()=>w.close()};
 }
+test('share uses the native theme-compatible icon instead of a white inline glyph',()=>{const f=fixture();const icon=f.button().querySelector('img.icon');assert.ok(icon);assert.equal(icon.src,'https://rss.test/themes/icons/share.svg');assert.equal(icon.alt,'');assert.equal(f.button().querySelector('svg'),null);f.close();});
 async function click(f){assert.ok(f.button(),'Share button exists'); for(const type of ['mouseup','click']) f.button().dispatchEvent(new f.w.MouseEvent(type,{bubbles:true,cancelable:true,button:0})); await new Promise(resolve=>setImmediate(resolve));}
 test('share copies original HTTP(S) URL without opening, toggling or marking read',async()=>{const f=fixture();await click(f);assert.deepEqual(f.calls.copy,['https://publisher.test/story?a=1&b=2']);assert.equal(f.calls.core+f.calls.open+f.calls.read,0);assert.equal(f.button().title,'Link copied');f.close();});
 test('native share is called synchronously with title and original URL',async()=>{const f=fixture();f.w.navigator.share=data=>{f.calls.share.push(data);return Promise.resolve();};const p=click(f);assert.equal(f.calls.share.length,1);await p;assert.equal(f.calls.share[0].title,'Story');assert.equal(f.calls.share[0].url,'https://publisher.test/story?a=1&b=2');assert.equal(f.calls.copy.length,0);f.close();});

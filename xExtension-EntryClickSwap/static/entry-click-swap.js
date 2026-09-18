@@ -169,7 +169,11 @@
 			button.className = 'item-element ecs-share-button';
 			button.title = 'Share article link';
 			button.setAttribute('aria-label', button.title);
-			button.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V3m-5 5 5-5 5 5M5 13v7h14v-7"/></svg>';
+			const icon = document.createElement('img');
+			icon.className = 'icon';
+			icon.src = new URL('../themes/icons/share.svg', document.baseURI).href;
+			icon.alt = '';
+			button.append(icon);
 			item.append(button);
 			header.append(item);
 		});
