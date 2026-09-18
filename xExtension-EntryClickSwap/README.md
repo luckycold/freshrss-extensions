@@ -8,6 +8,12 @@ A user extension for FreshRSS 1.29.1 that swaps the normal-view entry interactio
 - FreshRSS management controls, feed filters, labels, sharing menus, middle-click, and modified clicks keep their native behavior.
 - Opening the original website honors FreshRSS's existing **mark as read when opened on its original website** preference.
 - Entries loaded later through infinite scrolling receive the same behavior and icon.
+- **Share article link** shares the original publisher URL through the native share sheet where supported, otherwise copies it to the clipboard. Cancelling native sharing does not copy anything. If clipboard access is unavailable, a selectable-link dialog appears.
+- Sharing does not open the publisher, expand the reader, or change read state. Its keyboard-accessible button remains visible on collapsed Compact Media Cards.
+
+## Version 1.1.0
+
+Adds ordinary article-link sharing, accessible status feedback, and compact-card positioning. Only HTTP(S) links without embedded credentials are accepted.
 
 ## Scope
 

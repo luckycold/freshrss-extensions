@@ -1,0 +1,20 @@
+.flux_header > .item.ecs-share { display: flex; align-items: center; }
+.ecs-share-button { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; min-height: 38px; padding: 6px; color: inherit; background: transparent; border: 0; cursor: pointer; }
+.ecs-share-button svg { pointer-events: none; }
+.ecs-share-button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.ecs-share-button:disabled { opacity: .5; cursor: wait; }
+#ecs-share-status { position: fixed; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.ecs-share-fallback { max-width: min(90vw, 40rem); }
+.ecs-share-fallback input { display: block; box-sizing: border-box; width: 100%; min-width: min(70vw, 30rem); margin: 1em 0; }
+/* Separate from .item.share, which Compact Media Cards deliberately hides. */
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.ecs-share {
+ position: absolute !important; top: 10px; right: 102px; z-index: 12;
+ display: flex !important; width: 38px !important; height: 38px !important;
+ min-height: 0 !important; margin: 0 !important; padding: 0 !important;
+ border: 0 !important; background: transparent !important;
+}
+body:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.ecs-share > button {
+ width: 38px; height: 38px; border: 1px solid var(--cmc-card-control-border, #666);
+ border-radius: 999px; background: var(--cmc-card-control-surface, #222); color: var(--cmc-card-text, #fff);
+}
+body.cmc-desktop-controls:not(.reader) main#stream div.flux.cmc-swipe-ready:not(.active) > .flux_header > li.item.ecs-share { right: 148px; }
