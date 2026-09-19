@@ -526,6 +526,14 @@
 		if (!stream) {
 			return;
 		}
+		// Measure the toolbar rather than assuming one row or a mobile breakpoint.
+		// Also observe in list mode: wrapping/fonts can change its height there.
+		const toolbar = stream.querySelector(':scope > #yl_category_toolbar');
+		if (toolbar) {
+			const top = Number.parseFloat(window.getComputedStyle(toolbar).top) || 0;
+			stream.style.setProperty('--cmc-toolbar-bottom', (top + toolbar.getBoundingClientRect().height) + 'px');
+		}
+		observeMasonryItems(stream);
 		if (!masonryIsEligible(stream)) {
 			disableMasonryLayout(stream);
 			return;
@@ -794,6 +802,9 @@
 				let masonryStateChanged = false;
 				let masonryEligibilityChanged = false;
 				records.forEach(function (record) {
+					if (record.type === 'attributes' && record.target.id === 'new-article') {
+						masonryStateChanged = true;
+					}
 					if (record.type === 'attributes' && record.target.matches?.(CARD_SELECTOR)) {
 						const wasActive = (record.oldValue || '').split(/\s+/).includes('active');
 						if (wasActive !== record.target.classList.contains('active')) {
@@ -837,7 +848,7 @@
 				childList: true,
 				subtree: true,
 				attributes: true,
-				attributeFilter: ['class'],
+				attributeFilter: ['class', 'hidden'],
 				attributeOldValue: true,
 			});
 		}

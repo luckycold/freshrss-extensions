@@ -81,9 +81,9 @@ function createPage(options = {}) {
   return { dom, window, card };
 }
 
-test("release metadata identifies Compact Media Cards 1.1.1", () => {
+test("release metadata identifies Compact Media Cards 1.1.2", () => {
   assert.equal(metadata.name, "Compact Media Cards");
-  assert.equal(metadata.version, "1.1.1");
+  assert.equal(metadata.version, "1.1.2");
   assert.equal(metadata.entrypoint, "CompactMediaCards");
 });
 

@@ -14,6 +14,7 @@
 body.youlag-active:not(.reader) main#stream > #yl_category_toolbar {
 	box-sizing: border-box;
 	grid-column: 1 / -1;
+	order: -2;
 	min-width: 0;
 	margin: 0 !important;
 	padding: 6px 8px !important;
@@ -21,6 +22,18 @@ body.youlag-active:not(.reader) main#stream > #yl_category_toolbar {
 	border-radius: var(--cmc-card-radius);
 	background: var(--cmc-card-background) !important;
 	box-shadow: 0 1px 0 rgb(255 255 255 / 5%), 0 7px 18px rgb(0 0 0 / 16%);
+}
+
+/* Keep the native refresh link below the responsive sticky toolbar, without
+ * moving its DOM node (FreshRSS/Youlag use its sibling relationships). */
+body.youlag-active:not(.reader) main#stream:has(> #yl_category_toolbar) > #new-article {
+	order: -1;
+	top: calc(var(--cmc-toolbar-bottom, 0px) + 8px);
+	grid-column: 1 / -1;
+}
+
+body.youlag-active:not(.reader) main#stream > #new-article[hidden] {
+	display: none !important;
 }
 
 body.youlag-active:not(.reader) main#stream > #stream-footer,
