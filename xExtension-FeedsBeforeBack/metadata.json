@@ -1,0 +1,8 @@
+{
+  "name": "Feeds Before Back",
+  "author": "luckycold",
+  "description": "On phones, the first back gesture opens the left feed list before leaving the page.",
+  "version": "1.0.0",
+  "entrypoint": "FeedsBeforeBack",
+  "type": "user"
+}

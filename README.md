@@ -29,6 +29,10 @@ True OLED-black surfaces over Mapco, Youlag, and Compact Media Cards without mod
 
 Clicking an entry opens the publisher website in a new tab. The former website-link button opens the inline FreshRSS reader instead.
 
+### Feeds Before Back
+
+On phone-width pages, the first back gesture opens the left feed list instead of leaving. The next back gesture is the real previous page. Desktop back is unchanged. An installed web app cannot turn the system edge-swipe itself into a finger-following drawer; this uses a same-page history entry so that gesture stays in the app the first time.
+
 ### RSSHub Radar
 
 Converts supported webpage URLs into feeds through a configured RSSHub instance using RSSHub Radar rules. Valid direct RSS/Atom/JSON feeds are left unchanged.
