@@ -66,7 +66,7 @@ final class PodcastArtworkExtension extends Minz_Extension {
 
 	private function itunesImageUrl(\SimplePie\Item $item): ?string {
 		$tags = $item->get_item_tags('http://www.itunes.com/dtds/podcast-1.0.dtd', 'image');
-		foreach ($tags as $tag) {
+		foreach ($tags ?? [] as $tag) {
 			$href = $tag['attribs']['']['href'] ?? '';
 			if (is_string($href) && $this->isSafeImageUrl($href)) {
 				return $href;
