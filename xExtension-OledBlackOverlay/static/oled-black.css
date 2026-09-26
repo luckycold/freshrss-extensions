@@ -241,7 +241,7 @@ body.youlag-active #yl_nav_menu_container_content .btn {
 }
 
 body.youlag-active #yl_nav_menu_container_content #toggle-userqueries,
-body.youlag-active #yl_nav_menu_container_content #mark-read-more,
+body.youlag-active #yl_nav_menu_container_content .mark-read-menu #nav_menu_read > .dropdown-toggle.btn,
 body.youlag-active #yl_nav_menu_container_content #toggle-order {
   background-image: none !important;
 }
@@ -250,7 +250,7 @@ body.youlag-active
   #yl_nav_menu_container_content
   #toggle-userqueries
   > img.icon,
-body.youlag-active #yl_nav_menu_container_content #mark-read-more > img.icon,
+body.youlag-active #yl_nav_menu_container_content .mark-read-menu #nav_menu_read > .dropdown-toggle.btn > img.icon,
 body.youlag-active #yl_nav_menu_container_content #toggle-order > img.icon {
   display: inline-block !important;
   width: 16px;
@@ -275,13 +275,13 @@ body.youlag-active
 
 body.youlag-active #yl_nav_menu_container_content > .group,
 body.youlag-active #yl_nav_menu_container_content > .stick,
-body.youlag-active #yl_nav_menu_container_content #mark-read-menu {
+body.youlag-active #yl_nav_menu_container_content .mark-read-menu {
   display: flex;
   align-items: center;
   gap: 5px !important;
 }
 
-body.youlag-active #yl_nav_menu_container_content #mark-read-menu {
+body.youlag-active #yl_nav_menu_container_content .mark-read-menu {
   height: 41px !important;
   min-height: 41px !important;
   box-sizing: border-box;
@@ -291,7 +291,7 @@ body.youlag-active #yl_nav_menu_container_content #mark-read-menu {
 
 body.youlag-active
   #yl_nav_menu_container_content
-  #mark-read-menu
+  .mark-read-menu
   > .read_all.btn {
   height: 100% !important;
   box-sizing: border-box;
@@ -301,7 +301,7 @@ body.youlag-active
 
 body.youlag-active
   #yl_nav_menu_container_content
-  #mark-read-menu
+  .mark-read-menu
   #nav_menu_read {
   display: flex;
   align-self: stretch;
@@ -310,7 +310,7 @@ body.youlag-active
 
 body.youlag-active
   #yl_nav_menu_container_content
-  #mark-read-menu
+  .mark-read-menu
   #nav_menu_read
   > .dropdown-toggle.btn {
   display: flex;
@@ -326,46 +326,77 @@ body.youlag-active
 }
 
 @media (max-width: 840px) {
-  body.youlag-active #yl_nav_menu_container_content #mark-read-menu {
-    height: auto !important;
-    min-height: 0 !important;
+  body.youlag-active #yl_nav_menu_container_content .mark-read-menu {
+    height: 51px !important;
+    min-height: 51px !important;
     align-items: center;
   }
 
+  /* Youlag hides the one-tap submit on phones. Keep the remaining dropdown
+   * as one action: a checkmark with a chevron, not two apparent buttons. */
   body.youlag-active
     #yl_nav_menu_container_content
-    #mark-read-menu
-    #nav_menu_read {
-    align-self: auto;
+    .mark-read-menu
+    > .read_all.btn {
+    display: none !important;
   }
 
   body.youlag-active
     #yl_nav_menu_container_content
-    #mark-read-menu
+    .mark-read-menu
+    #nav_menu_read {
+    align-self: stretch;
+  }
+
+  body.youlag-active
+    #yl_nav_menu_container_content
+    .mark-read-menu
     #nav_menu_read
     > .dropdown-toggle.btn {
-    display: block;
-    width: auto;
-    min-width: 0;
-    height: auto;
-    padding-right: 17px;
-    padding-left: 17px;
-    text-align: center;
+    display: flex;
+    gap: 3px;
+    width: 52px;
+    min-width: 52px;
+    height: 100%;
+    padding: 0 !important;
+    background-image: none !important;
     border-radius: 999px !important;
   }
 
   body.youlag-active
     #yl_nav_menu_container_content
-    #mark-read-menu
-    #mark-read-more::before {
-    content: none !important;
+    .mark-read-menu
+    #nav_menu_read
+    > .dropdown-toggle.btn::before {
+    content: "✓" !important;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  body.youlag-active
+    #yl_nav_menu_container_content
+    .mark-read-menu
+    #nav_menu_read
+    > .dropdown-toggle.btn > img.icon {
+    display: inline-block !important;
+    width: 11px;
+    height: 11px;
+  }
+
+  /* This dropdown sits on the right edge of the phone toolbar. The base
+   * left-anchored 200px menu would otherwise render mostly off-screen. */
+  body.youlag-active #yl_nav_menu_container_content
+    .mark-read-menu #nav_menu_read > .dropdown-menu {
+    left: auto !important;
+    right: 0 !important;
+    top: 100% !important;
   }
 }
 
 html[dir="rtl"]
   body.youlag-active
   #yl_nav_menu_container_content
-  #mark-read-menu
+  .mark-read-menu
   > .read_all.btn {
   border-right-width: 1px !important;
   border-left-width: 0 !important;
@@ -375,10 +406,17 @@ html[dir="rtl"]
 html[dir="rtl"]
   body.youlag-active
   #yl_nav_menu_container_content
-  #mark-read-menu
+  .mark-read-menu
   #nav_menu_read
   > .dropdown-toggle.btn {
   border-radius: 999px 0 0 999px !important;
+}
+
+@media (max-width: 840px) {
+  html[dir="rtl"] body.youlag-active #yl_nav_menu_container_content
+    .mark-read-menu #nav_menu_read > .dropdown-toggle.btn {
+    border-radius: 999px !important;
+  }
 }
 
 body.youlag-active

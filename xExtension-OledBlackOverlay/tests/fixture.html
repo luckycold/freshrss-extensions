@@ -151,19 +151,19 @@
                   /></a>
                 </div>
               </div>
-              <div id="nav_menu_read_all" class="group stick">
-                <form id="mark-read-menu">
-                  <button id="mark-read" class="read_all btn" type="button">
+              <div class="nav_menu_read_all group stick">
+                <form class="mark-read-menu">
+                  <button class="read_all btn" type="button">
                     Mark as read
                   </button>
                   <div id="nav_menu_read" class="dropdown">
-                    <span id="dropdown-read" class="dropdown-target"></span>
-                    <a id="mark-read-more" class="dropdown-toggle btn" href="#"
+                    <div id="dropdown-read" class="dropdown-target"></div>
+                    <a class="dropdown-toggle btn" href="#dropdown-read"
                       ><img
-                        id="mark-read-icon"
                         class="icon"
-                        src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/down.svg"
+                        src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/Mapco/icons/down.svg"
                     /></a>
+                    <ul class="dropdown-menu"><li>Mark all as read</li></ul>
                   </div>
                 </form>
               </div>
@@ -331,25 +331,28 @@
           defaultFilter: control("#filter-default"),
           defaultFilterRect: rect("#filter-default"),
           activeFilter: control("#filter-active"),
-          markRead: control("#mark-read"),
-          markReadRect: rect("#mark-read"),
-          markReadMore: control("#mark-read-more"),
-          markReadMoreBefore: control("#mark-read-more", "::before"),
-          markReadMoreRect: rect("#mark-read-more"),
+          markRead: control(".mark-read-menu > .read_all.btn"),
+          markReadRect: rect(".mark-read-menu > .read_all.btn"),
+          markReadMore: control(".mark-read-menu #nav_menu_read > .dropdown-toggle.btn"),
+          markReadMoreBefore: control(".mark-read-menu #nav_menu_read > .dropdown-toggle.btn", "::before"),
+          markReadMoreRect: rect(".mark-read-menu #nav_menu_read > .dropdown-toggle.btn"),
           userQueries: control("#toggle-userqueries"),
           sortOrder: control("#toggle-order"),
           userQueriesIcon: icon("#userqueries-icon"),
-          markReadIcon: icon("#mark-read-icon"),
+          markReadIcon: icon(".mark-read-menu #nav_menu_read > .dropdown-toggle.btn img.icon"),
           sortIcon: icon("#sort-icon"),
           readIcon: icon("#read-icon"),
           refreshIcon: icon("#refresh-icon"),
           moreSettings: control("#more-settings"),
           actionGroup: control("#nav_menu_actions"),
-          markReadGroup: control("#mark-read-menu"),
-          markReadGroupRect: rect("#mark-read-menu"),
+          markReadGroup: control(".mark-read-menu"),
+          markReadGroupRect: rect(".mark-read-menu"),
           subscriptionCount: control("#subscription-title", "::after"),
           swipeAccent: image("#card", "::before"),
         };
+        document.querySelector(".mark-read-menu #nav_menu_read > .dropdown-toggle.btn").click();
+        values.markReadMenuTarget = !!document.querySelector("#dropdown-read:target");
+        values.markReadMenuRect = rect(".mark-read-menu #nav_menu_read > .dropdown-menu");
         const pre = document.createElement("pre");
         pre.id = "computed-results";
         pre.textContent = JSON.stringify(values);

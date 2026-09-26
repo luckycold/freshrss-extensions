@@ -187,7 +187,12 @@ class OledBlackOverlayTests(unittest.TestCase):
         self.assertAlmostEqual(dropdown["height"], reference["height"], delta=0.5)
         self.assertAlmostEqual(dropdown["width"], reference["width"], delta=0.5)
         self.assertEqual(values["markReadMore"]["borderRadius"], "999px")
-        self.assertEqual(values["markReadMoreBefore"]["content"], "none")
+        self.assertEqual(values["markReadMore"]["backgroundImage"], "none")
+        self.assertEqual(values["markReadMoreBefore"]["content"], '"✓"')
+        self.assertTrue(values["markReadMenuTarget"])
+        self.assertGreater(values["markReadMenuRect"]["width"], 100)
+        self.assertLessEqual(values["markReadMenuRect"]["right"], 390)
+        self.assertGreaterEqual(values["markReadMenuRect"]["left"], 0)
         icon = values["markReadIcon"]
         self.assertNotEqual(icon["display"], "none")
         self.assertEqual(icon["visibility"], "visible")
