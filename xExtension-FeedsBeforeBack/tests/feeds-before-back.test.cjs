@@ -22,11 +22,19 @@ function wait(ms = 30) {
 function createPage(options = {}) {
   const dom = new JSDOM(
     `<!doctype html>
-		<html><body>
+		<html><head><style>
+			.dropdown-menu { display: none; }
+			.dropdown-target:target ~ .dropdown-menu { display: block; }
+		</style></head><body>
 			<nav id="aside_feed" class="aside aside_feed${options.hidden ? " is-hidden" : ""}">
 				<a class="toggle_aside" href="#close">close</a>
 			</nav>
 			<div id="nav_menu_toggle_aside"><button class="btn" type="button"></button></div>
+			<nav class="item configure"><div class="dropdown">
+				<div id="dropdown-configure" class="dropdown-target"></div>
+				<a class="btn dropdown-toggle" href="#dropdown-configure">Settings</a>
+				<ul class="dropdown-menu"><li>Profile</li></ul>
+			</div></nav>
 		</body></html>`,
     {
       runScripts: "outside-only",
@@ -58,7 +66,7 @@ test("metadata is a user extension", () => {
   assert.equal(metadata.name, "Feeds Before Back");
   assert.equal(metadata.entrypoint, "FeedsBeforeBack");
   assert.equal(metadata.type, "user");
-  assert.equal(metadata.version, "1.0.0");
+  assert.equal(metadata.version, "1.0.1");
 });
 
 test("narrow closed feeds arm a same-page history trap", () => {
@@ -167,4 +175,34 @@ test("phone landscape with a hidden feed list still arms", () => {
     },
   });
   assert.equal(window.history.state.feedsBeforeBack, 1);
+});
+
+test("tapping settings keeps the CSS-targeted dropdown visible", async () => {
+  const { window, panel } = createPage();
+  const gear = window.document.querySelector(".configure .dropdown-toggle");
+  const menu = window.document.querySelector(".configure .dropdown-menu");
+  const targetedMenu = () => window.document.querySelector(".configure .dropdown-target:target ~ .dropdown-menu");
+  assert.equal(targetedMenu(), null);
+  gear.click();
+  await wait(80);
+  assert.equal(window.location.hash, "#dropdown-configure");
+  assert.equal(targetedMenu(), menu);
+  assert.equal(panel.classList.contains("visible"), false);
+});
+
+test("back closes settings first and the following back opens feeds", async () => {
+  const { window, panel } = createPage();
+  const menu = window.document.querySelector(".configure .dropdown-menu");
+  const targetedMenu = () => window.document.querySelector(".configure .dropdown-target:target ~ .dropdown-menu");
+  window.document.querySelector(".configure .dropdown-toggle").click();
+  await wait(40);
+  assert.equal(targetedMenu(), menu);
+  window.history.back();
+  await wait(40);
+  assert.equal(window.location.hash, "");
+  assert.equal(targetedMenu(), null);
+  assert.equal(panel.classList.contains("visible"), false);
+  window.history.back();
+  await wait(40);
+  assert.equal(panel.classList.contains("visible"), true);
 });

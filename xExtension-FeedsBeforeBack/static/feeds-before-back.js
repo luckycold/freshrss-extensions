@@ -124,6 +124,11 @@
 			handling = false;
 			return;
 		}
+		// A same-page anchor (e.g. the settings dropdown) also emits popstate.
+		// Do not consume that navigation as a back gesture.
+		if (location.hash) {
+			return;
+		}
 		if (!isOurs(leaving) || !hasFeeds()) {
 			return;
 		}
@@ -134,7 +139,7 @@
 			return;
 		}
 
-		if (!overlayMode() || feedsOpen() || location.hash) {
+		if (!overlayMode() || feedsOpen()) {
 			event.stopImmediatePropagation();
 			continueBack();
 			return;
