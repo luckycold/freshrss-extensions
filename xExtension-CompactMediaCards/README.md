@@ -15,7 +15,27 @@ Image-first FreshRSS cards with compact metadata overlays and FeedMe-style swipe
 
 ## Requirements
 
-FreshRSS 1.29+ with Youlag. Designed to sit under the OLED Black Overlay extension.
+FreshRSS 1.29+. The masonry and list layouts, toolbar, and swipe gestures are part of this extension. OLED Black Overlay is optional and can be enabled afterward. A Karakeep swipe needs the separate Karakeep Button extension.
+
+## Install
+
+Copy this directory to FreshRSS `extensions/xExtension-CompactMediaCards`, then enable **Compact Media Cards** under **Settings → Extensions**.
+
+## Configuration
+
+Open **Settings → Extensions → Compact Media Cards → Configure**.
+
+- **Card layout** — masonry grid or a single-column list. The feed toolbar Grid / List control changes the same setting.
+- **Phone columns** — off keeps one full-width column at 840px and narrower. On keeps two columns.
+- **Swipe left / swipe right** — read, favorite, reader, website, Karakeep, or none.
+
+## Screenshots
+
+Image files are not in the repository yet. Add them beside this README:
+
+- `screenshots/masonry.png` — desktop masonry feed
+- `screenshots/list.png` — single-column list
+- `screenshots/swipe.png` — phone swipe indicators
 
 ## Tests
 

@@ -4,7 +4,7 @@
 
 Local FreshRSS extensions for a media-first reader: OLED-black surfaces, compact cards, swapped click behavior, RSSHub conversion, and small compatibility helpers.
 
-**Requirements:** FreshRSS 1.29+ (tested on 1.29.1). Youlag is expected for the card and OLED overlay stack. No external runtime dependencies beyond FreshRSS itself.
+**Requirements:** FreshRSS 1.29+ (tested on 1.29.1). Each extension installs and runs on its own. No external runtime dependencies beyond FreshRSS itself.
 
 ## Extensions
 
@@ -18,7 +18,7 @@ Image-first feed cards with compact metadata overlays and FeedMe-style swipe act
 
 ### OLED Black Overlay
 
-True OLED-black surfaces over Mapco, Youlag, and Compact Media Cards without modifying those extensions.
+True OLED-black surfaces over FreshRSS and Compact Media Cards. Optional themes are styled only where they use FreshRSS’s own markup.
 
 - `#000` backgrounds
 - Neutral pill controls (4% fill, 9% border)
@@ -69,9 +69,10 @@ Typical locations:
 
 Recommended enable order for the card stack:
 
-1. Youlag
-2. Compact Media Cards
-3. OLED Black Overlay
+1. Compact Media Cards
+2. OLED Black Overlay
+
+Entry Click Swap, Feeds Before Back, RSSHub Radar, Retry-After Manager, and Podcast Artwork do not depend on that pair. Karakeep swipe actions need the separate Karakeep Button extension.
 
 ## Configuration
 

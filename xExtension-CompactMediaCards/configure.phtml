@@ -8,6 +8,7 @@ $layouts = CompactMediaCardsExtension::layoutOptions();
 $leftAction = $this->getSwipeLeftAction();
 $rightAction = $this->getSwipeRightAction();
 $layout = $this->getLayout();
+$mobileGrid = $this->getMobileGrid();
 ?>
 
 <h2>Compact Media Cards</h2>
@@ -25,7 +26,21 @@ $layout = $this->getLayout();
 			</select>
 			<p class="help">
 				Masonry grid packs compact cards into columns. Linear list stacks the same cards in one column.
-				The Grid / List control in the Youlag toolbar switches this without leaving the feed.
+				The Grid / List control on the feed toolbar switches this without leaving the feed.
+			</p>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="group-name" for="cmc_mobile_grid">Phone columns</label>
+		<div class="group-controls">
+			<label class="checkbox" for="cmc_mobile_grid">
+				<input type="checkbox" id="cmc_mobile_grid" name="cmc_mobile_grid" value="1"<?= $mobileGrid ? ' checked="checked"' : '' ?> />
+				Two columns on screens 840px and narrower
+			</label>
+			<p class="help">
+				Leave this off for one full-width column on a phone. Turn it on to keep the compact two-column phone grid.
+				Saved choices stay with this FreshRSS user.
 			</p>
 		</div>
 	</div>

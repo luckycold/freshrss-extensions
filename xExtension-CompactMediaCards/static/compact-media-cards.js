@@ -96,11 +96,33 @@
 		return window.context.extensions.compactMediaCards;
 	}
 
+	function mobileGridEnabled() {
+		return window.context?.extensions?.compactMediaCards?.mobileGrid === true;
+	}
+
+	function streamTitle() {
+		const selectors = [
+			'#aside_feed .active .item-title',
+			'#aside_feed .active > .title',
+			'#aside_feed .tree-folder.active > .tree-folder-title .title',
+			'#aside_feed a.active',
+		];
+		for (const selector of selectors) {
+			const text = document.querySelector(selector)?.textContent?.replace(/\s+/g, ' ').trim();
+			if (text) {
+				return text;
+			}
+		}
+		return 'Feeds';
+	}
+
 	function applyLayoutClass(layout = currentLayout()) {
 		const resolved = layout === 'list' ? 'list' : 'masonry';
 		if (document.body) {
+			document.body.classList.add('cmc-active');
 			document.body.classList.toggle('cmc-layout-list', resolved === 'list');
 			document.body.classList.toggle('cmc-layout-masonry', resolved === 'masonry');
+			document.body.classList.toggle('cmc-mobile-grid', mobileGridEnabled());
 		}
 		const marker = document.getElementById('cmc_layout');
 		if (marker) {
@@ -132,6 +154,7 @@
 				cmc_layout: layout,
 				cmc_swipe_left_action: selectedActionId('left'),
 				cmc_swipe_right_action: selectedActionId('right'),
+				cmc_mobile_grid: mobileGridEnabled() ? '1' : '0',
 			});
 			window.fetch(url, {
 				method: 'POST',
@@ -173,13 +196,20 @@
 	}
 
 	function ensureLayoutToggle() {
-		const container = document.querySelector('#yl_category_title_container');
-		if (!container) {
+		const stream = document.querySelector('main#stream');
+		if (!stream || document.body?.classList.contains('reader')) {
 			return;
 		}
-		let group = container.querySelector('.cmc-layout-toggle');
-		if (!group) {
-			group = document.createElement('div');
+		let toolbar = document.getElementById('cmc_toolbar');
+		if (!toolbar) {
+			toolbar = document.createElement('div');
+			toolbar.id = 'cmc_toolbar';
+			const main = document.createElement('div');
+			main.id = 'cmc_toolbar_main';
+			const title = document.createElement('div');
+			title.id = 'cmc_toolbar_title';
+			title.textContent = streamTitle();
+			const group = document.createElement('div');
 			group.className = 'cmc-layout-toggle';
 			group.setAttribute('role', 'group');
 			group.setAttribute('aria-label', 'Card layout');
@@ -187,11 +217,17 @@
 				createLayoutButton('masonry', 'Masonry grid'),
 				createLayoutButton('list', 'Linear list'),
 			);
-			const configure = container.querySelector('#yl_nav_menu_container_toggle');
-			if (configure) {
-				configure.before(group);
-			} else {
-				container.append(group);
+			main.append(title, group);
+			toolbar.append(main);
+			stream.prepend(toolbar);
+		} else {
+			const title = toolbar.querySelector('#cmc_toolbar_title');
+			const nextTitle = streamTitle();
+			// Assigning textContent always replaces the text node. The stream
+			// observer watches that subtree, so an unchanged title would schedule
+			// itself again and never return to the event loop.
+			if (title && title.textContent !== nextTitle) {
+				title.textContent = nextTitle;
 			}
 		}
 		syncLayoutToggle();
@@ -477,7 +513,6 @@
 
 	function masonryIsEligible(stream) {
 		return currentLayout() !== 'list'
-			&& document.body.classList.contains('youlag-active')
 			&& !document.body.classList.contains('reader')
 			&& !stream.classList.contains('reader')
 			&& !stream.querySelector(':scope > .flux.active')
@@ -528,7 +563,7 @@
 		}
 		// Measure the toolbar rather than assuming one row or a mobile breakpoint.
 		// Also observe in list mode: wrapping/fonts can change its height there.
-		const toolbar = stream.querySelector(':scope > #yl_category_toolbar');
+		const toolbar = stream.querySelector(':scope > #cmc_toolbar');
 		if (toolbar) {
 			const top = Number.parseFloat(window.getComputedStyle(toolbar).top) || 0;
 			stream.style.setProperty('--cmc-toolbar-bottom', (top + toolbar.getBoundingClientRect().height) + 'px');
@@ -751,7 +786,7 @@
 		event.stopImmediatePropagation();
 	}
 
-	function isolateYoulagTouchGesture(event) {
+	function isolateHorizontalSwipe(event) {
 		if (activeGesture?.axis === 'horizontal' || Date.now() < suppressClickUntil) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -787,8 +822,8 @@
 		document.addEventListener('pointerup', onPointerEnd, true);
 		document.addEventListener('pointercancel', onPointerEnd, true);
 		document.addEventListener('click', suppressPostSwipeClick, true);
-		document.addEventListener('touchmove', isolateYoulagTouchGesture, { capture: true, passive: false });
-		document.addEventListener('touchend', isolateYoulagTouchGesture, { capture: true, passive: false });
+		document.addEventListener('touchmove', isolateHorizontalSwipe, { capture: true, passive: false });
+		document.addEventListener('touchend', isolateHorizontalSwipe, { capture: true, passive: false });
 		document.addEventListener('freshrss:load-more', function (event) {
 			decorateCards(event.target instanceof Element ? event.target : document);
 			ensureLayoutToggle();
@@ -815,10 +850,6 @@
 					}
 					record.addedNodes.forEach(function (node) {
 						if (node instanceof Element) {
-							if (node.id === 'yl_category_toolbar'
-								|| node.querySelector?.('#yl_category_title_container, #yl_category_toolbar')) {
-								ensureLayoutToggle();
-							}
 							if (node.matches(CARD_SELECTOR) || node.querySelector(CARD_SELECTOR)) {
 								decorateCards(node);
 								masonryStateChanged = true;
@@ -839,6 +870,7 @@
 						masonryStateChanged = true;
 					});
 				});
+				ensureLayoutToggle();
 				if (masonryEligibilityChanged) {
 					layoutMasonry();
 				} else if (masonryStateChanged) {

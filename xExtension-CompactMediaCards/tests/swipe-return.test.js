@@ -81,10 +81,12 @@ function createPage(options = {}) {
   return { dom, window, card };
 }
 
-test("release metadata identifies Compact Media Cards 1.1.2", () => {
+test("release metadata identifies Compact Media Cards 1.2.0", () => {
   assert.equal(metadata.name, "Compact Media Cards");
-  assert.equal(metadata.version, "1.1.2");
+  assert.equal(metadata.version, "1.2.0");
   assert.equal(metadata.entrypoint, "CompactMediaCards");
+  assert.equal(metadata.type, "user");
+  assert.equal(metadata.author, "luckycold");
 });
 
 test("loaded image dimensions drive the card aspect ratio so no contain bars remain", () => {
@@ -171,13 +173,10 @@ test("swipe indicator stays horizontally fixed while fading upward", () => {
 
 test("toolbar switches between masonry and single-column card views and persists the choice", async () => {
   const dom = new JSDOM(
-    `<!doctype html><html><body class="youlag-active">
+    `<!doctype html><html><body>
+      <nav id="aside_feed"><a class="active item-title">All feeds</a></nav>
       <div id="cmc_layout" hidden data-cmc-layout="masonry"></div>
       <main id="stream">
-        <div id="yl_category_toolbar"><div id="yl_category_title_container">
-          <strong id="yl_category_title">All feeds</strong>
-          <button id="yl_nav_menu_container_toggle" type="button">Menu</button>
-        </div></div>
         <div class="flux not_read" data-id="42"><div class="flux_header">
           <div class="item thumbnail"><img src="https://example.test/image.jpg"></div>
           <div class="item titleAuthorSummaryDate"><a class="title" href="https://example.test/article">Article</a></div>
@@ -217,6 +216,11 @@ test("toolbar switches between masonry and single-column card views and persists
 
   const gridButton = window.document.querySelector('[data-cmc-layout-option="masonry"]');
   const listButton = window.document.querySelector('[data-cmc-layout-option="list"]');
+  const toolbar = window.document.getElementById("cmc_toolbar");
+  assert.ok(toolbar, "standalone layout toolbar was not created");
+  assert.equal(window.document.getElementById("yl_category_toolbar"), null);
+  assert.equal(toolbar.querySelector("#cmc_toolbar_title").textContent, "All feeds");
+  assert.equal(window.document.body.classList.contains("cmc-active"), true);
   assert.ok(gridButton, "masonry toolbar button was not created");
   assert.ok(listButton, "single-column toolbar button was not created");
   assert.equal(gridButton.getAttribute("aria-pressed"), "true");
@@ -244,6 +248,7 @@ test("toolbar switches between masonry and single-column card views and persists
   assert.equal(requests[0].url, window.context.extensions.compactMediaCards.configureUrl);
   const persisted = new URLSearchParams(requests[0].options.body);
   assert.equal(persisted.get("cmc_layout"), "list");
+  assert.equal(persisted.get("cmc_mobile_grid"), "0");
   assert.equal(persisted.get("_csrf"), "test-csrf");
   assert.match(
     stylesheet,
@@ -363,47 +368,80 @@ test("card metadata is layered over the media gradient instead of occupying a fo
   );
 });
 
+function dumpDom(args) {
+  const profile = fs.mkdtempSync(path.join(require("node:os").tmpdir(), "cmc-chrome-"));
+  return new Promise((resolve) => {
+    const child = childProcess.spawn(
+      "chromium",
+      [
+        "--headless",
+        "--no-sandbox",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--allow-file-access-from-files",
+        `--user-data-dir=${profile}`,
+        ...args,
+      ],
+      { stdio: ["ignore", "pipe", "pipe"], detached: true },
+    );
+    let stdout = "";
+    let settled = false;
+    const finish = () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timer);
+      try {
+        process.kill(-child.pid, "SIGKILL");
+      } catch (_) {
+        // The process group is already gone.
+      }
+      try {
+        child.kill("SIGKILL");
+      } catch (_) {
+        // The browser already exited.
+      }
+      childProcess.spawnSync("pkill", ["-9", "-f", profile]);
+      fs.rmSync(profile, { recursive: true, force: true });
+      resolve(stdout);
+    };
+    // Current Chrome writes --dump-dom and then keeps the browser alive.
+    const timer = setTimeout(finish, 8000);
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+      if (/<pre id="[^"]+">[^<]*<\/pre>/.test(stdout)) {
+        finish();
+      }
+    });
+    child.on("error", finish);
+    child.on("close", finish);
+  });
+}
+
 function rgbaAlpha(color) {
   const match = color.match(/^rgba?\([^,]+,[^,]+,[^,]+(?:,\s*([\d.]+))?\)$/);
   assert.ok(match, `unexpected color: ${color}`);
   return match[1] === undefined ? 1 : Number(match[1]);
 }
 
-function renderCardFixture(width, height = 800) {
+async function renderCardFixture(width, height = 800) {
   const fixture = path.join(__dirname, "card-height-buttons.html");
-  const profile = fs.mkdtempSync(path.join(require("node:os").tmpdir(), "cmc-card-fixture-"));
-  try {
-    const output = childProcess.execFileSync(
-      "chromium",
-      [
-        "--headless",
-        "--no-sandbox",
-        "--disable-gpu",
-        "--allow-file-access-from-files",
-        `--user-data-dir=${profile}`,
-        `--window-size=${width},${height}`,
-        "--virtual-time-budget=1000",
-        "--dump-dom",
-        new URL(`file://${fixture}`).href,
-      ],
-      {
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "ignore"],
-        timeout: 45000,
-      },
-    );
-    const match = output.match(
-      /<pre id="height-controls-results">([^<]+)<\/pre>/,
-    );
-    assert.ok(match, "Chromium did not return computed card layout");
-    return JSON.parse(match[1].replaceAll("&quot;", '"'));
-  } finally {
-    fs.rmSync(profile, { recursive: true, force: true });
-  }
+  const output = await dumpDom([
+    `--window-size=${width},${height}`,
+    "--virtual-time-budget=1000",
+    "--dump-dom",
+    new URL(`file://${fixture}`).href,
+  ]);
+  const match = output.match(
+    /<pre id="height-controls-results">([^<]+)<\/pre>/,
+  );
+  assert.ok(match, "Chromium did not return computed card layout");
+  return JSON.parse(match[1].replaceAll("&quot;", '"'));
 }
 
-test("image cards hug their media height and top-corner controls reveal the image", () => {
-  const layout = renderCardFixture(1280);
+test("image cards hug their media height and top-corner controls reveal the image", async () => {
+  const layout = await renderCardFixture(1280);
 
   assert.ok(
     Math.abs(layout.imageCard.height - layout.imageHeader.height) <= 1,
@@ -524,8 +562,8 @@ test("fine-pointer mode enables desktop controls and reacts to capability change
   dom.window.close();
 });
 
-test("desktop keeps a bottom-left Favorite button and hover-only top-right actions", () => {
-  const desktop = renderCardFixture(1280);
+test("desktop keeps a bottom-left Favorite button and hover-only top-right actions", async () => {
+  const desktop = await renderCardFixture(1280);
   assert.equal(desktop.desktopControls, true);
   assert.ok(
     desktop.favoriteButton.width >= 38 && desktop.favoriteButton.height >= 38,
@@ -582,7 +620,7 @@ test("desktop keeps a bottom-left Favorite button and hover-only top-right actio
     "selected collapsed cards should keep the same desktop control treatment",
   );
 
-  const mobile = renderCardFixture(390, 844);
+  const mobile = await renderCardFixture(390, 844);
   assert.equal(mobile.desktopControls, false);
   assert.equal(mobile.karakeep.width, 0, "Karakeep should remain gesture-only on mobile");
   assert.ok(mobile.favoriteButton.width > 0, "the existing mobile favorite metadata action disappeared");
@@ -628,30 +666,18 @@ test("swipe action icons remain plain glyphs without circular surfaces", () => {
   );
 });
 
-test("a selected current card retains the same metadata-on-image layout", () => {
+test("a selected current card retains the same metadata-on-image layout", async () => {
   assert.doesNotMatch(
     stylesheet,
     /cmc-swipe-ready:not\(\.active\):not\(\.current\)/,
   );
   const fixture = path.join(__dirname, "card-height-buttons.html");
-  const output = childProcess.execFileSync(
-    "chromium",
-    [
-      "--headless",
-      "--no-sandbox",
-      "--disable-gpu",
-      "--allow-file-access-from-files",
-      "--window-size=1280,1000",
-      "--virtual-time-budget=1000",
-      "--dump-dom",
-      new URL(`file://${fixture}`).href,
-    ],
-    {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-      timeout: 45000,
-    },
-  );
+  const output = await dumpDom([
+    "--window-size=1280,1000",
+    "--virtual-time-budget=1000",
+    "--dump-dom",
+    new URL(`file://${fixture}`).href,
+  ]);
   const match = output.match(
     /<pre id="height-controls-results">([^<]+)<\/pre>/,
   );
@@ -680,26 +706,14 @@ test("a selected current card retains the same metadata-on-image layout", () => 
   }
 });
 
-test("mixed-height cards pack as masonry without changing DOM order", () => {
+test("mixed-height cards pack as masonry without changing DOM order", async () => {
   const fixture = path.join(__dirname, "masonry-layout.html");
-  const output = childProcess.execFileSync(
-    "chromium",
-    [
-      "--headless",
-      "--no-sandbox",
-      "--disable-gpu",
-      "--allow-file-access-from-files",
-      "--window-size=1280,1200",
-      "--virtual-time-budget=2500",
-      "--dump-dom",
-      new URL(`file://${fixture}`).href,
-    ],
-    {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-      timeout: 45000,
-    },
-  );
+  const output = await dumpDom([
+    "--window-size=1280,1200",
+    "--virtual-time-budget=2500",
+    "--dump-dom",
+    new URL(`file://${fixture}`).href,
+  ]);
   const match = output.match(/<pre id="masonry-results">([^<]+)<\/pre>/);
   assert.ok(match, "Chromium did not return masonry layout results");
   const result = JSON.parse(match[1].replaceAll("&quot;", '"'));
@@ -743,7 +757,7 @@ test("mixed-height cards pack as masonry without changing DOM order", () => {
     initial.stream.bottom >= initial.footer.bottom + initial.footerMarginBottom - 1,
     "masonry grid does not contain the footer and its bottom margin",
   );
-  assert.equal(result.expanded.masonryActive, false, "expanded reader must restore Youlag's native grid");
+  assert.equal(result.expanded.masonryActive, false, "an expanded entry must leave masonry");
   assert.ok(
     result.expanded.cards.every((card) => card.gridRowEnd === "auto"),
     "expanded reader must clear masonry row spans",
@@ -787,11 +801,7 @@ test("mixed-height cards pack as masonry without changing DOM order", () => {
 });
 
 test("newly loaded cards are decorated and included in masonry", async () => {
-  const { dom, window } = createPage({
-    setupWindow: (targetWindow) => {
-      targetWindow.document.body.classList.add("youlag-active");
-    },
-  });
+  const { dom, window } = createPage();
   const stream = window.document.querySelector("#stream");
   stream.insertAdjacentHTML(
     "beforeend",
@@ -823,7 +833,6 @@ test("removed cards are released from the masonry resize observer", async () => 
   const unobserved = new Set();
   const { dom, window } = createPage({
     setupWindow: (targetWindow) => {
-      targetWindow.document.body.classList.add("youlag-active");
       targetWindow.ResizeObserver = class {
         constructor(callback) {
           this.callback = callback;
@@ -852,30 +861,18 @@ test("removed cards are released from the masonry resize observer", async () => 
   dom.window.close();
 });
 
-test("mobile-grid preference retains two masonry columns", () => {
+test("mobile-grid preference retains two masonry columns", async () => {
   const fixture = path.join(__dirname, "masonry-layout.html");
-  const output = childProcess.execFileSync(
-    "chromium",
-    [
-      "--headless",
-      "--no-sandbox",
-      "--disable-gpu",
-      "--allow-file-access-from-files",
-      "--window-size=390,1200",
-      "--virtual-time-budget=1900",
-      "--dump-dom",
-      new URL(`file://${fixture}`).href,
-    ],
-    {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-      timeout: 45000,
-    },
-  );
+  const output = await dumpDom([
+    "--window-size=390,1200",
+    "--virtual-time-budget=1900",
+    "--dump-dom",
+    new URL(`file://${fixture}`).href,
+  ]);
   const match = output.match(/<pre id="masonry-results">([^<]+)<\/pre>/);
   assert.ok(match, "Chromium did not return mobile masonry results");
   const initial = JSON.parse(match[1].replaceAll("&quot;", '"')).initial;
   const columns = new Set(initial.cards.map((card) => Math.round(card.rect.left)));
   assert.equal(initial.masonryActive, true);
-  assert.equal(columns.size, 2, "Youlag mobile-grid mode must remain two columns");
+  assert.equal(columns.size, 2, "mobile grid mode must remain two columns");
 });

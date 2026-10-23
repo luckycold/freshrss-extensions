@@ -4,23 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Compact Media Cards masonry fixture</title>
-    <link
-      rel="stylesheet"
-      href="/config/.hermes/cache/FreshRSS-1.29.1/p/themes/base-theme/frss.css"
-    />
-    <link
-      rel="stylesheet"
-      href="/config/.hermes/cache/FreshRSS-1.29.1/p/themes/Mapco/mapco.css"
-    />
-    <link
-      rel="stylesheet"
-      href="/config/.hermes/cache/freshrss-upstreams-20260821-153249/youlag/static/theme.min.css"
-    />
     <link rel="stylesheet" href="../static/compact-media-cards.css" />
-    <link
-      rel="stylesheet"
-      href="/config/.hermes/cache/xExtension-OledBlackOverlay/static/oled-black.css"
-    />
     <style>
       html,
       body {
@@ -36,7 +20,7 @@
         gap: 4px !important;
         padding: 0 !important;
       }
-      #yl_category_toolbar {
+      #cmc_toolbar {
         height: 48px;
         min-height: 48px;
       }
@@ -45,9 +29,20 @@
       }
     </style>
   </head>
-  <body class="youlag-active youlag-mobile-layout--grid">
+  <body>
+    <script>
+      window.context = {
+        extensions: {
+          compactMediaCards: {
+            layout: "masonry",
+            mobileGrid: true,
+            leftAction: "read",
+            rightAction: "favorite",
+          },
+        },
+      };
+    </script>
     <main id="stream">
-      <div id="yl_category_toolbar">Subscriptions</div>
       <div id="card-1" class="flux not_read">
         <ul class="flux_header">
           <li class="item thumbnail">
@@ -136,7 +131,7 @@
             gridAutoFlow: style.gridAutoFlow,
             gridAutoRows: style.gridAutoRows,
             stream: rect("#stream"),
-            toolbar: rect("#yl_category_toolbar"),
+            toolbar: rect("#cmc_toolbar"),
             footer: rect("#stream-footer"),
             footerMarginBottom: Number.parseFloat(
               getComputedStyle(document.querySelector("#stream-footer")).marginBottom,

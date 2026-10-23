@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: PHP syntax
+        run: |
+          set -euo pipefail
+          find . -path '*/node_modules/*' -prune -o -name '*.php' -print0 |
+            xargs -0 -n1 php -l
+
+      - name: PHP unit tests
+        run: |
+          php xExtension-RSSHub/tests/run.php
+          php xExtension-RetryAfterManager/tests/run.php
+
+      - name: Node dependencies
+        run: |
+          npm ci --prefix xExtension-EntryClickSwap
+          npm ci --prefix xExtension-FeedsBeforeBack
+
+      - name: Node tests
+        run: |
+          npm test --prefix xExtension-EntryClickSwap
+          npm test --prefix xExtension-FeedsBeforeBack
+
+      - name: Chromium for layout tests
+        run: |
+          if ! command -v chromium >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y chromium-browser || sudo apt-get install -y chromium
+          fi
+          command -v chromium
+
+      - name: Compact Media Cards and OLED Black Overlay
+        run: |
+          NODE_PATH=xExtension-EntryClickSwap/node_modules \
+            node --test --test-timeout 20000 \
+            xExtension-CompactMediaCards/tests/swipe-return.test.js
+          python3 -m unittest discover -s xExtension-OledBlackOverlay/tests -v
