@@ -7,44 +7,19 @@
         document.documentElement.dir = "rtl";
       }
     </script>
-    <link
-      rel="stylesheet"
-      href="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/base-theme/frss.css"
-    />
-    <link
-      rel="stylesheet"
-      href="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/Mapco/mapco.css"
-    />
-    <link
-      rel="stylesheet"
-      href="file:///config/.hermes/cache/freshrss-live-extensions-20260821/xExtension-Youlag/static/theme.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="file:///config/.hermes/cache/freshrss-live-extensions-20260821/xExtension-CompactMediaCards/static/compact-media-cards.css"
-    />
+    <link rel="stylesheet" href="../../xExtension-CompactMediaCards/static/compact-media-cards.css" />
     <link rel="stylesheet" href="../static/oled-black.css" />
     <style>
-      body {
-        margin: 0;
-      }
-      .header {
-        min-height: 40px;
-      }
+      body { margin: 0; }
+      .header { min-height: 40px; }
       #global {
         display: grid;
         grid-template-columns: 280px 1fr;
         min-height: 600px;
       }
-      .aside_feed {
-        min-height: 600px;
-      }
-      #stream {
-        min-height: 600px;
-      }
-      .fixture-panel {
-        min-height: 80px;
-      }
+      .aside_feed { min-height: 600px; }
+      #stream { min-height: 600px; }
+      .fixture-panel { min-height: 80px; }
       #subscription-title::after {
         content: attr(data-unread);
         display: inline-block;
@@ -52,15 +27,11 @@
         padding: 1px 7px;
       }
       @media (max-width: 840px) {
-        #global {
-          display: block;
-        }
+        #global { display: block; }
       }
     </style>
   </head>
-  <body
-    class="youlag-active youlag-loaded youlag-sidenav--expanded yl-page-home"
-  >
+  <body>
     <header class="header">
       <div class="item title"><a href="#">FreshRSS</a></div>
       <div class="item search">
@@ -68,11 +39,7 @@
           <div id="header-search" class="stick">
             <input id="header-search-input" type="search" value="Search" />
             <button id="header-search-button" class="btn" type="submit">
-              <img
-                id="header-search-icon"
-                class="icon"
-                src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/search.svg"
-              />
+              <img id="header-search-icon" class="icon" alt="" src="icon.png" />
             </button>
           </div>
         </form>
@@ -80,15 +47,9 @@
       <nav class="item configure">
         <div class="dropdown">
           <div id="dropdown-configure" class="dropdown-target"></div>
-          <a
-            id="global-settings"
-            class="btn dropdown-toggle"
-            href="#dropdown-configure"
-            ><img
-              id="global-settings-icon"
-              class="icon"
-              src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/configure.svg"
-          /></a>
+          <a id="global-settings" class="btn dropdown-toggle" href="#dropdown-configure">
+            <img id="global-settings-icon" class="icon" alt="" src="icon.png" />
+          </a>
         </div>
       </nav>
     </header>
@@ -96,133 +57,71 @@
       <nav id="aside_feed" class="aside aside_feed">
         <ul id="sidebar" class="tree">
           <li class="tree-folder category all">
-            <a class="tree-folder-title" href="#"
-              ><span id="subscription-title" class="title" data-unread="2310"
-                >Subscriptions</span
-              ></a
-            >
+            <a class="tree-folder-title" href="#">
+              <span id="subscription-title" class="title" data-unread="2310">Subscriptions</span>
+            </a>
           </li>
           <li class="tree-folder category">
-            <a class="tree-folder-title" href="#"
-              ><span class="title" data-unread="527">Entertainment</span></a
-            >
+            <a class="tree-folder-title" href="#"><span class="title" data-unread="527">Entertainment</span></a>
           </li>
         </ul>
       </nav>
       <main id="stream">
-        <div id="yl_category_toolbar" class="yl-toolbar-open--viewOptions">
-          <div id="yl_category_title_container">
-            <div id="yl_category_title">Subscriptions</div>
-            <button id="yl_nav_menu_container_toggle">Configure view</button>
-          </div>
-          <div id="yl_nav_menu_container">
-            <nav id="yl_nav_menu_container_content" class="nav_menu">
-              <div id="nav_menu_actions" class="group">
-                <a id="filter-default" class="btn" href="#"
-                  ><img
-                    id="read-icon"
-                    class="icon"
-                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/read.svg"
-                /></a>
-                <a id="filter-active" class="btn active" href="#"
-                  ><img
-                    class="icon"
-                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/unread.svg"
-                /></a>
-                <a class="btn" href="#"
-                  ><img
-                    class="icon"
-                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/starred.svg"
-                /></a>
-                <a class="btn" href="#"
-                  ><img
-                    class="icon"
-                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/non-starred.svg"
-                /></a>
-                <div id="nav_menu_queries" class="dropdown">
-                  <a
-                    id="toggle-userqueries"
-                    class="dropdown-toggle btn"
-                    href="#"
-                    ><img
-                      id="userqueries-icon"
-                      class="icon"
-                      src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/bookmark-tag.svg"
-                  /></a>
-                </div>
-              </div>
-              <div class="nav_menu_read_all group stick">
-                <form class="mark-read-menu">
-                  <button class="read_all btn" type="button">
-                    Mark as read
-                  </button>
-                  <div id="nav_menu_read" class="dropdown">
-                    <div id="dropdown-read" class="dropdown-target"></div>
-                    <a class="dropdown-toggle btn" href="#dropdown-read"
-                      ><img
-                        class="icon"
-                        src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/Mapco/icons/down.svg"
-                    /></a>
-                    <ul class="dropdown-menu"><li>Mark all as read</li></ul>
-                  </div>
-                </form>
-              </div>
-              <div id="nav_menu_views" class="group">
-                <a class="btn active" href="#"
-                  ><img
-                    class="icon"
-                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/view-normal.svg"
-                /></a>
-                <a class="btn" href="#"
-                  ><img
-                    class="icon"
-                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/view-global.svg"
-                /></a>
-                <a class="btn" href="#"
-                  ><img
-                    class="icon"
-                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/view-reader.svg"
-                /></a>
-              </div>
-              <div id="nav_menu_sort" class="group">
-                <div class="dropdown">
-                  <a id="toggle-order" class="dropdown-toggle btn" href="#"
-                    ><img
-                      id="sort-icon"
-                      class="icon"
-                      src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/sort-down.svg"
-                  /></a>
-                </div>
-              </div>
-              <div id="nav_menu_actualize" class="group">
-                <a id="actualize" class="btn" href="#"
-                  ><img
-                    id="refresh-icon"
-                    class="icon"
-                    src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/refresh.svg"
-                /></a>
-              </div>
-              <div id="yl_nav_menu_settings_shortcut">
-                <a id="more-settings" class="btn" href="#">More settings</a>
-              </div>
-            </nav>
+        <div id="cmc_toolbar">
+          <div id="cmc_toolbar_main">
+            <div id="cmc_toolbar_title">Subscriptions</div>
           </div>
         </div>
+        <nav class="nav_menu">
+          <button id="configure-view" class="btn" type="button">Configure view</button>
+          <div id="nav_menu_actions" class="group">
+            <a id="filter-default" class="btn" href="#"><img id="read-icon" class="icon" alt="" src="icon.png" /></a>
+            <a id="filter-active" class="btn active" href="#"><img class="icon" alt="" src="icon.png" /></a>
+            <a class="btn" href="#"><img class="icon" alt="" src="icon.png" /></a>
+            <a class="btn" href="#"><img class="icon" alt="" src="icon.png" /></a>
+            <div id="nav_menu_queries" class="dropdown">
+              <a id="toggle-userqueries" class="dropdown-toggle btn" href="#">
+                <img id="userqueries-icon" class="icon" alt="" src="icon.png" />
+              </a>
+            </div>
+          </div>
+          <div class="nav_menu_read_all group stick">
+            <form class="mark-read-menu">
+              <button class="read_all btn" type="button">Mark as read</button>
+              <div id="nav_menu_read" class="dropdown">
+                <div id="dropdown-read" class="dropdown-target"></div>
+                <a class="dropdown-toggle btn" href="#dropdown-read">
+                  <img id="mark-read-icon" class="icon" alt="" src="icon.png" />
+                </a>
+                <ul class="dropdown-menu"><li>Mark all as read</li></ul>
+              </div>
+            </form>
+          </div>
+          <div id="nav_menu_views" class="group">
+            <a class="btn active" href="#"><img class="icon" alt="" src="icon.png" /></a>
+            <a class="btn" href="#"><img class="icon" alt="" src="icon.png" /></a>
+            <a class="btn" href="#"><img class="icon" alt="" src="icon.png" /></a>
+          </div>
+          <div id="nav_menu_sort" class="group">
+            <div class="dropdown">
+              <a id="toggle-order" class="dropdown-toggle btn" href="#">
+                <img id="sort-icon" class="icon" alt="" src="icon.png" />
+              </a>
+            </div>
+          </div>
+          <div id="nav_menu_actualize" class="group">
+            <a id="actualize" class="btn" href="#"><img id="refresh-icon" class="icon" alt="" src="icon.png" /></a>
+          </div>
+          <div>
+            <a id="more-settings" class="btn" href="#">More settings</a>
+          </div>
+        </nav>
         <div id="dropdown-search-wrapper" class="dropdown only-mobile">
           <div id="dropdown-search" class="dropdown-target"></div>
-          <a
-            id="toggle-search"
-            class="dropdown-toggle btn"
-            title="Search"
-            href="#dropdown-search"
-            ><img
-              id="mobile-search-icon"
-              class="icon"
-              src="file:///config/.hermes/cache/FreshRSS-1.29.1/p/themes/icons/search.svg"
-          /></a>
-          <ul class="dropdown-menu">
-            <li class="item"><input type="search" value="Search" /></li>
-          </ul>
+          <a id="toggle-search" class="dropdown-toggle btn" title="Search" href="#dropdown-search">
+            <img id="mobile-search-icon" class="icon" alt="" src="icon.png" />
+          </a>
+          <ul class="dropdown-menu"><li class="item"><input type="search" value="Search" /></li></ul>
         </div>
         <div id="card" class="flux cmc-swipe-ready cmc-no-thumbnail not_read">
           <ul id="card-header" class="flux_header">
@@ -252,14 +151,7 @@
           getComputedStyle(document.querySelector(id), pseudo).backgroundImage;
         const rect = (id) => {
           const box = document.querySelector(id).getBoundingClientRect();
-          return {
-            top: box.top,
-            right: box.right,
-            bottom: box.bottom,
-            left: box.left,
-            width: box.width,
-            height: box.height,
-          };
+          return { top: box.top, right: box.right, bottom: box.bottom, left: box.left, width: box.width, height: box.height };
         };
         const control = (id, pseudo = null) => {
           const style = getComputedStyle(document.querySelector(id), pseudo);
@@ -286,14 +178,14 @@
         const icon = (id) => {
           const element = document.querySelector(id);
           const style = getComputedStyle(element);
-          const rect = element.getBoundingClientRect();
+          const box = element.getBoundingClientRect();
           return {
             display: style.display,
             visibility: style.visibility,
             opacity: style.opacity,
             filter: style.filter,
-            width: rect.width,
-            height: rect.height,
+            width: box.width,
+            height: box.height,
             naturalWidth: element.naturalWidth,
             naturalHeight: element.naturalHeight,
             objectPosition: style.objectPosition,
@@ -306,7 +198,7 @@
           header: color(".header"),
           aside: color(".aside_feed"),
           stream: color("#stream"),
-          toolbar: color("#yl_category_toolbar"),
+          toolbar: color("#cmc_toolbar"),
           card: color("#card"),
           cardHeader: color("#card-header"),
           thumbnail: color("#thumbnail"),
@@ -314,7 +206,7 @@
           panel: color("#panel"),
           settingsBox: color("#settings-box"),
           settingsInput: color("#settings-input"),
-          configureView: control("#yl_nav_menu_container_toggle"),
+          configureView: control("#configure-view"),
           globalSettings: control("#global-settings"),
           globalSettingsRect: rect("#global-settings"),
           globalSettingsIcon: icon("#global-settings-icon"),
@@ -351,6 +243,7 @@
           swipeAccent: image("#card", "::before"),
         };
         document.querySelector(".mark-read-menu #nav_menu_read > .dropdown-toggle.btn").click();
+        values.viewport = { innerWidth: window.innerWidth, innerHeight: window.innerHeight, clientWidth: document.documentElement.clientWidth };
         values.markReadMenuTarget = !!document.querySelector("#dropdown-read:target");
         values.markReadMenuRect = rect(".mark-read-menu #nav_menu_read > .dropdown-menu");
         const pre = document.createElement("pre");

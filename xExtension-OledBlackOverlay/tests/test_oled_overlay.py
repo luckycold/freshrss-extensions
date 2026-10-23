@@ -25,27 +25,44 @@ class OledBlackOverlayTests(unittest.TestCase):
         last_error = ""
         for _attempt in range(3):
             with tempfile.TemporaryDirectory(prefix="oled-overlay-chromium-") as profile:
-                result = subprocess.run(
-                    [
-                        "chromium",
-                        "--headless",
-                        "--no-sandbox",
-                        "--disable-gpu",
-                        "--allow-file-access-from-files",
-                        f"--user-data-dir={profile}",
-                        f"--window-size={width},{height}",
-                        "--virtual-time-budget=2000",
-                        "--dump-dom",
-                        fixture_url,
-                    ],
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                    timeout=45,
-                )
-            match = re.search(r'<pre id="computed-results">(.*?)</pre>', result.stdout, re.S)
+                command = [
+                    "chromium",
+                    "--headless",
+                    "--no-sandbox",
+                    "--disable-gpu",
+                    "--disable-dev-shm-usage",
+                    "--allow-file-access-from-files",
+                    f"--user-data-dir={profile}",
+                    f"--window-size={width},{height}",
+                    "--virtual-time-budget=2000",
+                    "--dump-dom",
+                    fixture_url,
+                ]
+                try:
+                    result = subprocess.run(
+                        command,
+                        check=False,
+                        capture_output=True,
+                        text=True,
+                        timeout=4,
+                        start_new_session=True,
+                    )
+                    stdout = result.stdout
+                    stderr = result.stderr
+                except subprocess.TimeoutExpired as expired:
+                    # Current Chrome prints --dump-dom and then keeps the
+                    # browser process alive. The DOM is already on stdout.
+                    stdout = expired.stdout or ""
+                    stderr = expired.stderr or ""
+                    if isinstance(stdout, bytes):
+                        stdout = stdout.decode()
+                    if isinstance(stderr, bytes):
+                        stderr = stderr.decode()
+                finally:
+                    subprocess.run(["pkill", "-9", "-f", profile], check=False)
+            match = re.search(r'<pre id="computed-results">(.*?)</pre>', stdout, re.S)
             if match is None:
-                last_error = result.stderr[-1000:]
+                last_error = (stderr or "")[-1000:]
                 continue
             values = json.loads(html.unescape(match.group(1)))
             if values.get("card") == BLACK and values.get("header") == BLACK:
@@ -59,7 +76,7 @@ class OledBlackOverlayTests(unittest.TestCase):
         self.assertEqual(metadata["name"], "OLED Black Overlay")
         self.assertEqual(metadata["entrypoint"], "OledBlackOverlay")
         self.assertEqual(metadata["type"], "user")
-        self.assertEqual(metadata["version"], "1.0.0")
+        self.assertEqual(metadata["version"], "1.1.0")
         self.assertNotIn(":not(.current)", CSS.read_text(encoding="utf-8"))
         php = PHP.read_text(encoding="utf-8")
         self.assertIn("Minz_View::appendStyle($this->getFileUrl('oled-black.css'))", php)
@@ -67,18 +84,20 @@ class OledBlackOverlayTests(unittest.TestCase):
     def test_css_contract_covers_oled_surfaces(self):
         css = CSS.read_text(encoding="utf-8")
         required = [
-            "--yl-color-body-background: #000",
             "--cmc-card-background: #000",
             "html,\nbody",
-            "#yl_category_toolbar",
+            "#cmc_toolbar",
             "div.flux.cmc-no-thumbnail",
             ".cmc-text-content",
-            "#youlagTheaterModal",
-            "#ylArticleSplitPane",
+            ".nav_menu",
+            ".mark-read-menu",
+            "header.header .item.search",
             "#global #overlay #panel",
         ]
         for token in required:
             self.assertIn(token, css)
+        self.assertNotIn("youlag", css.lower())
+        self.assertNotIn("#yl_", css)
         self.assertNotIn("--yl-color-gradient-active: #000", css)
         self.assertNotIn("--cmc-left-action-color: #000", css)
         self.assertNotIn("--cmc-right-action-color: #000", css)
@@ -191,7 +210,12 @@ class OledBlackOverlayTests(unittest.TestCase):
         self.assertEqual(values["markReadMoreBefore"]["content"], '"✓"')
         self.assertTrue(values["markReadMenuTarget"])
         self.assertGreater(values["markReadMenuRect"]["width"], 100)
-        self.assertLessEqual(values["markReadMenuRect"]["right"], 390)
+        # Headless Chrome may not honor a requested 390px window, so compare
+        # against the viewport that was actually laid out.
+        self.assertLessEqual(
+            values["markReadMenuRect"]["right"],
+            values["viewport"]["clientWidth"] + 0.5,
+        )
         self.assertGreaterEqual(values["markReadMenuRect"]["left"], 0)
         icon = values["markReadIcon"]
         self.assertNotEqual(icon["display"], "none")

@@ -1,3 +1,9 @@
+/* Compact Media Cards
+ * Standalone card grid. Column counts follow the previous reading layout:
+ * two columns from tablet width, three from 1144px, four from 1360px,
+ * five from 1800px, and one column on phone widths unless Mobile grid is on.
+ */
+
 :root {
 	--cmc-card-background: #111214;
 	--cmc-card-radius: 14px;
@@ -8,10 +14,38 @@
 	--cmc-card-control-surface-hover: rgb(0 0 0 / 48%);
 	--cmc-card-control-border: rgb(255 255 255 / 12%);
 	--cmc-list-card-max-width: 48rem;
+	--cmc-stream-gap: 0.3125rem;
 }
 
-/* Match YouLag's category toolbar to the compact card language. */
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar {
+body.cmc-active:not(.reader) main#stream {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	grid-auto-flow: row;
+	align-items: start;
+	gap: var(--cmc-stream-gap);
+	padding: 12px;
+	background: #090a0b;
+}
+
+@media (min-width: 1144px) {
+	body.cmc-active:not(.reader) main#stream {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1360px) {
+	body.cmc-active:not(.reader) main#stream {
+		grid-template-columns: repeat(4, minmax(240px, 1fr));
+	}
+}
+
+@media (min-width: 1800px) {
+	body.cmc-active:not(.reader) main#stream {
+		grid-template-columns: repeat(5, minmax(200px, 1fr));
+	}
+}
+
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar {
 	box-sizing: border-box;
 	grid-column: 1 / -1;
 	order: -2;
@@ -24,26 +58,25 @@ body.youlag-active:not(.reader) main#stream > #yl_category_toolbar {
 	box-shadow: 0 1px 0 rgb(255 255 255 / 5%), 0 7px 18px rgb(0 0 0 / 16%);
 }
 
-/* Keep the native refresh link below the responsive sticky toolbar, without
- * moving its DOM node (FreshRSS/Youlag use its sibling relationships). */
-body.youlag-active:not(.reader) main#stream:has(> #yl_category_toolbar) > #new-article {
+/* Keep the native refresh link below the sticky toolbar without moving its DOM node. */
+body.cmc-active:not(.reader) main#stream:has(> #cmc_toolbar) > #new-article {
 	order: -1;
 	top: calc(var(--cmc-toolbar-bottom, 0px) + 8px);
 	grid-column: 1 / -1;
 }
 
-body.youlag-active:not(.reader) main#stream > #new-article[hidden] {
+body.cmc-active:not(.reader) main#stream > #new-article[hidden] {
 	display: none !important;
 }
 
-body.youlag-active:not(.reader) main#stream > #stream-footer,
-body.youlag-active:not(.reader) main#stream > form {
+body.cmc-active:not(.reader) main#stream > #stream-footer,
+body.cmc-active:not(.reader) main#stream > form {
 	grid-column: 1 / -1;
 	min-width: 0;
 }
 
 /* Compact mixed-height cards without changing FreshRSS's DOM/source order. */
-body.youlag-active:not(.reader) main#stream.cmc-masonry-active {
+body.cmc-active:not(.reader) main#stream.cmc-masonry-active {
 	display: grid;
 	grid-auto-flow: row dense;
 	grid-auto-rows: 1px;
@@ -51,8 +84,8 @@ body.youlag-active:not(.reader) main#stream.cmc-masonry-active {
 }
 
 /* Linear list: the same compact cards, one column, source order preserved. */
-body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream,
-body.youlag-active.cmc-layout-list:not(.reader) main#stream {
+body.cmc-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream,
+body.cmc-active.cmc-layout-list:not(.reader) main#stream {
 	display: grid !important;
 	grid-template-columns: minmax(0, 1fr) !important;
 	grid-auto-flow: row !important;
@@ -63,25 +96,25 @@ body.youlag-active.cmc-layout-list:not(.reader) main#stream {
 	padding: 12px !important;
 }
 
-body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > .flux,
-body.youlag-active.cmc-layout-list:not(.reader) main#stream > .flux {
+body.cmc-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > .flux,
+body.cmc-active.cmc-layout-list:not(.reader) main#stream > .flux {
 	width: 100% !important;
 	max-width: min(100%, var(--cmc-list-card-max-width)) !important;
 	justify-self: center;
 }
 
-body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > #yl_category_toolbar,
-body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > #stream-footer,
-body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > form,
-body.youlag-active.cmc-layout-list:not(.reader) main#stream > #yl_category_toolbar,
-body.youlag-active.cmc-layout-list:not(.reader) main#stream > #stream-footer,
-body.youlag-active.cmc-layout-list:not(.reader) main#stream > form {
+body.cmc-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > #cmc_toolbar,
+body.cmc-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > #stream-footer,
+body.cmc-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream > form,
+body.cmc-active.cmc-layout-list:not(.reader) main#stream > #cmc_toolbar,
+body.cmc-active.cmc-layout-list:not(.reader) main#stream > #stream-footer,
+body.cmc-active.cmc-layout-list:not(.reader) main#stream > form {
 	width: 100% !important;
 	max-width: none !important;
 	justify-self: stretch;
 }
 
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar > #yl_category_title_container {
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar > #cmc_toolbar_main {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
@@ -91,7 +124,8 @@ body.youlag-active:not(.reader) main#stream > #yl_category_toolbar > #yl_categor
 	gap: 8px;
 }
 
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_category_title {
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar #cmc_toolbar_title {
+	flex: 1 1 auto;
 	min-width: 0;
 	padding: 0 6px !important;
 	font-size: 1.05rem;
@@ -100,27 +134,12 @@ body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_category_
 	word-break: normal;
 }
 
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_container_toggle,
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_manage_current_feed,
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_stream_category_filter_toggle {
-	flex: 0 0 auto;
-	min-height: 38px;
-	margin: 0;
-	padding: 7px 12px;
-	border: 1px solid rgb(255 255 255 / 9%);
-	border-radius: 999px;
-	background: rgb(255 255 255 / 4%);
-	color: var(--cmc-text);
-	font-size: 0.9rem;
-	line-height: 1.15;
-}
-
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle {
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle {
 	display: inline-flex;
 	flex: 0 0 auto;
 	align-items: stretch;
 	min-height: 38px;
-	margin: 0;
+	margin: 0 0 0 auto;
 	padding: 0;
 	border: 1px solid rgb(255 255 255 / 9%);
 	border-radius: 999px;
@@ -128,7 +147,7 @@ body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-t
 	overflow: hidden;
 }
 
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button {
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -146,65 +165,55 @@ body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-t
 	cursor: pointer;
 }
 
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button[aria-pressed="true"] {
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle button[aria-pressed="true"] {
 	background: rgb(255 255 255 / 12%);
 }
 
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button:hover,
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button:focus-visible {
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle button:hover,
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle button:focus-visible {
 	background: rgb(255 255 255 / 9%);
 }
 
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button[aria-pressed="true"]:hover,
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button[aria-pressed="true"]:focus-visible {
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle button[aria-pressed="true"]:hover,
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle button[aria-pressed="true"]:focus-visible {
 	background: rgb(255 255 255 / 16%);
 }
 
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle svg {
+body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle svg {
 	display: block;
 	width: 16px;
 	height: 16px;
 	fill: currentColor;
 }
 
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_container_toggle:hover,
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_container_toggle:focus-visible,
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_manage_current_feed:hover,
-body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_manage_current_feed:focus-visible {
-	border-color: rgb(255 255 255 / 16%);
-	background: rgb(255 255 255 / 9%);
-}
-
 @media (max-width: 480px) {
-	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar {
+	body.cmc-active:not(.reader) main#stream > #cmc_toolbar {
 		padding: 5px 6px !important;
 		border-radius: 11px;
 	}
 
-	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_category_title {
+	body.cmc-active:not(.reader) main#stream > #cmc_toolbar #cmc_toolbar_title {
 		padding-left: 5px !important;
 		font-size: 1rem;
 	}
 
-	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_container_toggle,
-	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar #yl_nav_menu_manage_current_feed {
-		min-height: 36px;
-		padding: 6px 10px;
-		font-size: 0.84rem;
-	}
-
-	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle {
+	body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle {
 		min-height: 36px;
 	}
 
-	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle button {
+	body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle button {
 		min-height: 36px;
 		padding: 6px 10px;
 	}
 
-	body.youlag-active:not(.reader) main#stream > #yl_category_toolbar .cmc-layout-toggle .cmc-layout-label {
+	body.cmc-active:not(.reader) main#stream > #cmc_toolbar .cmc-layout-toggle .cmc-layout-label {
 		display: none;
 	}
+}
+
+body.reader #cmc_toolbar,
+main#stream.reader #cmc_toolbar {
+	display: none !important;
 }
 
 /* Keep the extension inert in FreshRSS reader mode and on an expanded entry. */
@@ -908,7 +917,7 @@ body:not(.reader) main#stream div.flux.favorite.cmc-swipe-ready:not(.active) {
 }
 
 @media (max-width: 840px) {
-	body.youlag-active:not(.reader) main#stream {
+	body.cmc-active:not(.reader) main#stream {
 		grid-template-columns: minmax(0, 1fr) !important;
 		gap: 18px !important;
 		padding: 12px !important;
@@ -920,15 +929,15 @@ body:not(.reader) main#stream div.flux.favorite.cmc-swipe-ready:not(.active) {
 		max-width: none !important;
 	}
 
-	body.youlag-active.youlag-mobile-layout--grid:not(.reader) main#stream {
+	body.cmc-active.cmc-mobile-grid:not(.reader) main#stream {
 		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 		gap: 4px !important;
 	}
 
-	body.youlag-active.cmc-layout-list:not(.reader) main#stream,
-	body.youlag-active.cmc-layout-list.youlag-mobile-layout--grid:not(.reader) main#stream,
-	body.youlag-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream,
-	body.youlag-active.youlag-mobile-layout--grid:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream {
+	body.cmc-active.cmc-layout-list:not(.reader) main#stream,
+	body.cmc-active.cmc-layout-list.cmc-mobile-grid:not(.reader) main#stream,
+	body.cmc-active:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream,
+	body.cmc-active.cmc-mobile-grid:not(.reader):has(#cmc_layout[data-cmc-layout="list"]) main#stream {
 		display: grid !important;
 		grid-template-columns: minmax(0, 1fr) !important;
 		gap: 18px !important;

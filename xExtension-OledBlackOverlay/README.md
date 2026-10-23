@@ -1,6 +1,6 @@
 # OLED Black Overlay
 
-A late-loading FreshRSS user extension that paints true OLED black (`#000`) over Mapco, Youlag, and Compact Media Cards without modifying those extensions.
+A late-loading FreshRSS user extension that paints true OLED black (`#000`) over FreshRSS’s header, navigation, stream, and cards, including the Compact Media Cards toolbar.
 
 ## Features
 
@@ -12,7 +12,18 @@ A late-loading FreshRSS user extension that paints true OLED black (`#000`) over
 
 ## Requirements
 
-FreshRSS 1.29+ with Youlag. Load this extension after Youlag and Compact Media Cards.
+FreshRSS 1.29+. Enable it after Compact Media Cards when both are installed. It has no settings page.
+
+## Install
+
+Copy this directory to FreshRSS `extensions/xExtension-OledBlackOverlay`, then enable **OLED Black Overlay** under **Settings → Extensions**.
+
+## Screenshots
+
+Image files are not in the repository yet. Add them beside this README:
+
+- `screenshots/header.png` — black header and neutral pill controls
+- `screenshots/cards.png` — black stream with Compact Media Cards
 
 ## Tests
 

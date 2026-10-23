@@ -1,4 +1,4 @@
-// Integration regression against the actual FreshRSS/Youlag cascade.
+// Optional live check against a signed-in FreshRSS reader. Not part of CI.
 // NODE_PATH=<playwright install>/node_modules node tests/banner-layout.cjs
 // FRESHRSS_URL must point to an already authorized reader (no credentials here).
 const { chromium } = require('playwright');
@@ -32,7 +32,7 @@ const assert = require('node:assert/strict');
      await page.waitForTimeout(350);
      const boxes=await page.evaluate(()=>{
       const rect=s=>document.querySelector(s).getBoundingClientRect().toJSON();
-      return {toolbar:rect('#yl_category_toolbar'),banner:rect('#new-article'),card:rect('#stream > .flux'),scrollY,hidden:document.querySelector('#new-article').hidden};
+      return {toolbar:rect('#cmc_toolbar'),banner:rect('#new-article'),card:rect('#stream > .flux'),scrollY,hidden:document.querySelector('#new-article').hidden};
      });
      results.push({width,layout,visible,scroll,...boxes});
      if(visible) assert.ok(boxes.banner.top>=boxes.toolbar.bottom-1,`overlap: ${JSON.stringify(results.at(-1))}`);

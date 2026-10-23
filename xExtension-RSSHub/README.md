@@ -2,6 +2,20 @@
 
 A FreshRSS system extension that mirrors the useful part of the RSS-Bridge extension workflow for RSSHub.
 
+## Requirements
+
+FreshRSS 1.29+ with the PHP cURL extension. This is a system extension: an administrator enables it and sets the RSSHub base URL and optional access secret on the extension configuration page.
+
+## Install
+
+Copy this directory to FreshRSS `extensions/xExtension-RSSHub`, then enable **RSSHub Radar** under **Administration → Extensions**.
+
+## Screenshots
+
+Image files are not in the repository yet. Add `screenshots/configure.png` beside this README for the RSSHub URL form.
+
+## Behavior
+
 When a URL is added, the extension:
 
 1. Asks FreshRSS to parse the exact URL as a feed with HTML autodiscovery disabled.

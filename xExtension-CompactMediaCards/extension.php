@@ -6,6 +6,7 @@ final class CompactMediaCardsExtension extends Minz_Extension {
 	private const DEFAULT_LEFT_ACTION = 'karakeep';
 	private const DEFAULT_RIGHT_ACTION = 'favorite';
 	private const DEFAULT_LAYOUT = 'masonry';
+	private const DEFAULT_MOBILE_GRID = false;
 
 	/** @return array<string,string> */
 	public static function swipeActionOptions(): array {
@@ -60,6 +61,10 @@ final class CompactMediaCardsExtension extends Minz_Extension {
 		return $this->validatedLayout($this->getUserConfigurationString('layout'));
 	}
 
+	public function getMobileGrid(): bool {
+		return $this->getUserConfigurationBool('mobile_grid') ?? self::DEFAULT_MOBILE_GRID;
+	}
+
 	/**
 	 * @param array<string,mixed> $vars
 	 * @return array<string,mixed>
@@ -69,6 +74,7 @@ final class CompactMediaCardsExtension extends Minz_Extension {
 			'leftAction' => $this->getSwipeLeftAction(),
 			'rightAction' => $this->getSwipeRightAction(),
 			'layout' => $this->getLayout(),
+			'mobileGrid' => $this->getMobileGrid(),
 			'configureUrl' => Minz_Url::display([
 				'c' => 'extension',
 				'a' => 'configure',
@@ -102,6 +108,7 @@ final class CompactMediaCardsExtension extends Minz_Extension {
 		$this->setUserConfigurationValue('swipe_left_action', $left);
 		$this->setUserConfigurationValue('swipe_right_action', $right);
 		$this->setUserConfigurationValue('layout', $layout);
+		$this->setUserConfigurationValue('mobile_grid', Minz_Request::paramBoolean('cmc_mobile_grid'));
 		FreshRSS_UserDAO::touch();
 	}
 

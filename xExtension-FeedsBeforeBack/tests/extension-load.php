@@ -3,7 +3,12 @@
 declare(strict_types=1);
 
 require '/var/www/FreshRSS/cli/_cli.php';
-cliInitUser('lucky');
+$user = getenv('FRESHRSS_USER');
+if (!is_string($user) || $user === '') {
+	fwrite(STDERR, "Set FRESHRSS_USER to the FreshRSS account under test (this install used lucky).\n");
+	exit(2);
+}
+cliInitUser($user);
 $root = dirname(__DIR__);
 if (!is_file($root . '/extension.php') || !is_file($root . '/metadata.json')) {
 	fwrite(STDERR, "FAIL extension bootstrap files are missing\n");

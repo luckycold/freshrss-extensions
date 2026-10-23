@@ -2,6 +2,20 @@
 
 A small FreshRSS system extension that lists active `Retry-After` locks for the current user's feeds and provides an individual **Reset and refresh** action.
 
+## Requirements
+
+FreshRSS 1.29+. No third-party extensions.
+
+## Install
+
+Copy this directory to FreshRSS `extensions/xExtension-RetryAfterManager`, then enable **Retry-After Manager** under **Administration → Extensions**.
+
+## Screenshots
+
+Image files are not in the repository yet. Add `screenshots/locks.png` beside this README for the active-lock table.
+
+
+
 ## Behavior
 
 - Maps each subscribed feed to FreshRSS's exact domain-wide and route-specific `data/Retry-After/*.txt` naming rules.
